@@ -3,13 +3,13 @@ package testutils
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/golang.org/x/crypto/ocsp"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/golang.org/x/crypto/ocsp"
 	"net/http"
 	"net/http/httptest"
 	"sync/atomic"
 
-	"github.com/mailgun/vulcand/engine"
-	"github.com/mailgun/vulcand/plugin/ratelimit"
+	"github.com/FoxComm/vulcand/engine"
+	"github.com/FoxComm/vulcand/plugin/ratelimit"
 )
 
 func init() {

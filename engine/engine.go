@@ -3,7 +3,7 @@ package engine
 import (
 	"time"
 
-	"github.com/mailgun/vulcand/plugin"
+	"github.com/FoxComm/vulcand/plugin"
 )
 
 type NewEngineFn func() (Engine, error)

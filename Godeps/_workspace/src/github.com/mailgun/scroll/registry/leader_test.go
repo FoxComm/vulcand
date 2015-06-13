@@ -3,9 +3,9 @@ package registry
 import (
 	"testing"
 
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll/vulcan/middleware"
-	. "github.com/mailgun/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll/vulcan/middleware"
+	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 )
 
 func TestLeaderRegistry(t *testing.T) {

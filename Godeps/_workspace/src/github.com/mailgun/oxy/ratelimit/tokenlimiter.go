@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/ttlmap"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/ttlmap"
 )
 
 const DefaultCapacity = 65536

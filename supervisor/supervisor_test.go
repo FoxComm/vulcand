@@ -6,16 +6,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
-	. "github.com/mailgun/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
-	"github.com/mailgun/vulcand/engine"
-	"github.com/mailgun/vulcand/engine/memng"
-	"github.com/mailgun/vulcand/plugin/registry"
-	"github.com/mailgun/vulcand/proxy"
-	"github.com/mailgun/vulcand/stapler"
-	. "github.com/mailgun/vulcand/testutils"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
+	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
+	"github.com/FoxComm/vulcand/engine"
+	"github.com/FoxComm/vulcand/engine/memng"
+	"github.com/FoxComm/vulcand/plugin/registry"
+	"github.com/FoxComm/vulcand/proxy"
+	"github.com/FoxComm/vulcand/stapler"
+	. "github.com/FoxComm/vulcand/testutils"
 )
 
 func TestSupervisor(t *testing.T) { TestingT(t) }

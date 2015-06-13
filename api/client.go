@@ -11,10 +11,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/mailgun/vulcand/engine"
-	"github.com/mailgun/vulcand/plugin"
+	"github.com/FoxComm/vulcand/engine"
+	"github.com/FoxComm/vulcand/plugin"
 
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 )
 
 const CurrentVersion = "v2"

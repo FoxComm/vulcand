@@ -3,7 +3,7 @@ package memmetrics
 import (
 	"time"
 
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
 )
 
 type ratioOptSetter func(r *RatioCounter) error

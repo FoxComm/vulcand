@@ -5,13 +5,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
-	"github.com/mailgun/vulcand/engine/test"
-	"github.com/mailgun/vulcand/plugin/registry"
-	"github.com/mailgun/vulcand/secret"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/engine/test"
+	"github.com/FoxComm/vulcand/plugin/registry"
+	"github.com/FoxComm/vulcand/secret"
 
-	. "github.com/mailgun/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
+	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 )
 
 func TestEtcd(t *testing.T) { TestingT(t) }

@@ -12,19 +12,19 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/manners"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/metrics"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
-	"github.com/mailgun/vulcand/api"
-	"github.com/mailgun/vulcand/engine"
-	"github.com/mailgun/vulcand/engine/etcdng"
-	"github.com/mailgun/vulcand/plugin"
-	"github.com/mailgun/vulcand/proxy"
-	"github.com/mailgun/vulcand/secret"
-	"github.com/mailgun/vulcand/stapler"
-	"github.com/mailgun/vulcand/supervisor"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/manners"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/metrics"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
+	"github.com/FoxComm/vulcand/api"
+	"github.com/FoxComm/vulcand/engine"
+	"github.com/FoxComm/vulcand/engine/etcdng"
+	"github.com/FoxComm/vulcand/plugin"
+	"github.com/FoxComm/vulcand/proxy"
+	"github.com/FoxComm/vulcand/secret"
+	"github.com/FoxComm/vulcand/stapler"
+	"github.com/FoxComm/vulcand/supervisor"
 )
 
 func Run(registry *plugin.Registry) error {
@@ -275,6 +275,7 @@ func (s *Service) newEngine() error {
 			EtcdConsistency: s.options.EtcdConsistency,
 			Box:             box,
 		})
+
 	if err != nil {
 		return err
 	}

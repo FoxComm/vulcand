@@ -8,7 +8,7 @@ package check_test
 
 import (
 	"fmt"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 	"log"
 	"os"
 	"regexp"

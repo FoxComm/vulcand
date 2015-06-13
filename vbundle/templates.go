@@ -4,7 +4,7 @@ const mainTemplate = `package main
 
 import (
 	"fmt"
-	"github.com/mailgun/vulcand/service"
+	"github.com/FoxComm/vulcand/service"
 	"{{.PackagePath}}/registry"
 	"os"
 )
@@ -27,7 +27,7 @@ func main() {
 const registryTemplate = `package registry
 
 import (
-	"github.com/mailgun/vulcand/plugin"
+	"github.com/FoxComm/vulcand/plugin"
 	{{range .Packages}}
 	"{{.}}"
 	{{end}}
@@ -54,8 +54,8 @@ func GetRegistry() (*plugin.Registry, error) {
 const vulcanctlTemplate = `package main
 
 import (
-    "github.com/mailgun/log"
-	"github.com/mailgun/vulcand/vctl/command"
+    "github.com/FoxComm/log"
+	"github.com/FoxComm/vulcand/vctl/command"
 	"{{.PackagePath}}/registry"
 	"os"
 )

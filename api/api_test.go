@@ -5,19 +5,19 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
-	oxytest "github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
-	"github.com/mailgun/vulcand/engine"
-	"github.com/mailgun/vulcand/engine/memng"
-	"github.com/mailgun/vulcand/plugin/connlimit"
-	"github.com/mailgun/vulcand/plugin/registry"
-	"github.com/mailgun/vulcand/proxy"
-	"github.com/mailgun/vulcand/stapler"
-	"github.com/mailgun/vulcand/supervisor"
-	"github.com/mailgun/vulcand/testutils"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	oxytest "github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
+	"github.com/FoxComm/vulcand/engine"
+	"github.com/FoxComm/vulcand/engine/memng"
+	"github.com/FoxComm/vulcand/plugin/connlimit"
+	"github.com/FoxComm/vulcand/plugin/registry"
+	"github.com/FoxComm/vulcand/proxy"
+	"github.com/FoxComm/vulcand/stapler"
+	"github.com/FoxComm/vulcand/supervisor"
+	"github.com/FoxComm/vulcand/testutils"
 
-	. "github.com/mailgun/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
+	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 )
 
 func TestApi(t *testing.T) { TestingT(t) }

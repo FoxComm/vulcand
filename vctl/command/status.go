@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/buger/goterm"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/mailgun/vulcand/engine"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/buger/goterm"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
+	"github.com/FoxComm/vulcand/engine"
 )
 
 func NewTopCommand(cmd *Command) cli.Command {

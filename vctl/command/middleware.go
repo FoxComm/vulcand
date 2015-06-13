@@ -2,9 +2,9 @@ package command
 
 import (
 	"fmt"
-	"github.com/mailgun/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/mailgun/vulcand/engine"
-	"github.com/mailgun/vulcand/plugin"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
+	"github.com/FoxComm/vulcand/engine"
+	"github.com/FoxComm/vulcand/plugin"
 )
 
 func NewMiddlewareCommands(cmd *Command) []cli.Command {
