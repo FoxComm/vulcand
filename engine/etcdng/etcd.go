@@ -307,7 +307,13 @@ func (n *ng) GetMiddleware(key engine.MiddlewareKey) (*engine.Middleware, error)
 	if err != nil {
 		return nil, err
 	}
-	return engine.MiddlewareFromJSON([]byte(bytes), n.registry.GetSpec, key.Id)
+	m, err := engine.MiddlewareFromJSON([]byte(bytes), n.registry.GetSpec, key.Id)
+	if err != nil {
+		if f, ok := m.Middleware.(engine.MiddlewareEngine); ok {
+			f.InitEngine(n)
+		}
+	}
+	return m, err
 }
 
 func (n *ng) UpsertMiddleware(fk engine.FrontendKey, m engine.Middleware, ttl time.Duration) error {

@@ -188,6 +188,11 @@ func (t *TomlNg) loadMiddlewares() error {
 			return fmt.Errorf("middleware of type %s is not supported", ms.Type)
 		}
 		m, err := spec.FromToml(ms.Middleware, &t.tomlMeta)
+
+		if f, ok := m.(engine.MiddlewareEngine); ok {
+			f.InitEngine(t)
+		}
+
 		if err != nil {
 			return err
 		}

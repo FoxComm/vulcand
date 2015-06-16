@@ -36,6 +36,11 @@ type KeyPair struct {
 	Cert []byte
 }
 
+// interface for plugins which requires Engine to properly work
+type MiddlewareEngine interface {
+	InitEngine(Engine)
+}
+
 func NewKeyPair(cert, key []byte) (*KeyPair, error) {
 	if len(cert) == 0 || len(key) == 0 {
 		return nil, fmt.Errorf("Provide non-empty certificate and a private key")
