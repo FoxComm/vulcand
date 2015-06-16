@@ -13,6 +13,9 @@ BackendId = "origin_backend"
 [frontends.origin_backend.settings.limits]
 MaxBodyBytes = 1024
 
+[[frontends.origin_backend.middlewares]]
+middlewareId = "ratelimit1"
+priority = 1
 
 [backends]
 [backends.origin_backend]
@@ -23,3 +26,13 @@ type = "http"
 url = "http://localhost:8080"
 [[servers.origin_backend]]
 url = "http://localhost:8081"
+
+
+[middlewares]
+[middlewares.ratelimit1]
+type = "ratelimit"
+[middlewares.ratelimit1.middleware]
+requests = 1
+periodseconds = 1
+burst = 3
+variable = "client.ip"

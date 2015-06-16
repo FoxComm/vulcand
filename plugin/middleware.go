@@ -1,7 +1,9 @@
 package plugin
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"net/http"
 	"reflect"
 
@@ -19,17 +21,36 @@ type MiddlewareSpec struct {
 	FromCli CliReader
 }
 
-type UnmarshalFunc func(data []byte, v interface{}) error
-
-func (ms *MiddlewareSpec) FromEncoded(data []byte, decode UnmarshalFunc) (Middleware, error) {
+func (ms *MiddlewareSpec) FromJSON(data []byte) (Middleware, error) {
 	// Get a function's type
 	fnType := reflect.TypeOf(ms.FromOther)
 
 	// Create a pointer to the function's first argument
 	ptr := reflect.New(fnType.In(0)).Interface()
-	err := decode(data, &ptr)
+	err := json.Unmarshal(data, &ptr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode %T from JSON, error: %s", ptr, err)
+	}
+	// Now let's call the function to produce a middleware
+	fnVal := reflect.ValueOf(ms.FromOther)
+	results := fnVal.Call([]reflect.Value{reflect.ValueOf(ptr).Elem()})
+
+	m, out := results[0].Interface(), results[1].Interface()
+	if out != nil {
+		return nil, out.(error)
+	}
+	return m.(Middleware), nil
+}
+
+func (ms *MiddlewareSpec) FromToml(data toml.Primitive, tmeta *toml.MetaData) (Middleware, error) {
+	// Get a function's type
+	fnType := reflect.TypeOf(ms.FromOther)
+
+	// Create a pointer to the function's first argument
+	ptr := reflect.New(fnType.In(0)).Interface()
+	err := tmeta.PrimitiveDecode(data, ptr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode %T from TOML, error: %s", ptr, err)
 	}
 	// Now let's call the function to produce a middleware
 	fnVal := reflect.ValueOf(ms.FromOther)

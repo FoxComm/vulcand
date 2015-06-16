@@ -182,7 +182,7 @@ func MiddlewareFromJSON(in []byte, getter plugin.SpecGetter, id ...string) (*Mid
 	if spec == nil {
 		return nil, fmt.Errorf("middleware of type %s is not supported", ms.Type)
 	}
-	m, err := spec.FromEncoded(ms.Middleware, json.Unmarshal)
+	m, err := spec.FromJSON(ms.Middleware)
 	if err != nil {
 		return nil, err
 	}

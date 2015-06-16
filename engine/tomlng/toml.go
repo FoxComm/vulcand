@@ -23,8 +23,9 @@ type TomlNg struct {
 	Backends  map[engine.BackendKey]engine.Backend
 	Listeners map[engine.ListenerKey]engine.Listener
 
-	Middlewares map[engine.FrontendKey][]engine.Middleware
-	Servers     map[engine.BackendKey][]engine.Server
+	Middlewares      map[engine.FrontendKey][]engine.Middleware
+	KnownMiddlewares map[string]engine.Middleware
+	Servers          map[engine.BackendKey][]engine.Server
 
 	Registry *plugin.Registry
 	ChangesC chan interface{}
@@ -32,6 +33,7 @@ type TomlNg struct {
 
 	tomlConfigPath string
 	tomlConfig     EngineTomlConfig
+	tomlMeta       toml.MetaData
 }
 
 func New(configPath string, r *plugin.Registry) (engine.Engine, error) {
@@ -40,13 +42,14 @@ func New(configPath string, r *plugin.Registry) (engine.Engine, error) {
 		Frontends: map[engine.FrontendKey]engine.Frontend{},
 		Backends:  map[engine.BackendKey]engine.Backend{},
 
-		Listeners:      map[engine.ListenerKey]engine.Listener{},
-		Middlewares:    map[engine.FrontendKey][]engine.Middleware{},
-		Servers:        map[engine.BackendKey][]engine.Server{},
-		Registry:       r,
-		ChangesC:       make(chan interface{}, 1000),
-		ErrorsC:        make(chan error),
-		tomlConfigPath: configPath,
+		Listeners:        map[engine.ListenerKey]engine.Listener{},
+		Middlewares:      map[engine.FrontendKey][]engine.Middleware{},
+		KnownMiddlewares: map[string]engine.Middleware{},
+		Servers:          map[engine.BackendKey][]engine.Server{},
+		Registry:         r,
+		ChangesC:         make(chan interface{}, 1000),
+		ErrorsC:          make(chan error),
+		tomlConfigPath:   configPath,
 	}
 	err := ng.LoadConfig()
 	return ng, err
@@ -63,11 +66,18 @@ func (m *TomlNg) Close() {
 }
 
 func (m *TomlNg) LoadConfig() error {
-	if _, err := toml.DecodeFile(m.tomlConfigPath, &m.tomlConfig); err != nil {
+	var err error
+	if m.tomlMeta, err = toml.DecodeFile(m.tomlConfigPath, &m.tomlConfig); err != nil {
 		return err
 	}
 
+	fmt.Printf("TOML: %+v\n", m.tomlConfig)
+
 	if err := m.loadListeners(); err != nil {
+		return err
+	}
+
+	if err := m.loadMiddlewares(); err != nil {
 		return err
 	}
 
@@ -82,8 +92,6 @@ func (m *TomlNg) LoadConfig() error {
 	if err := m.loadServers(); err != nil {
 		return err
 	}
-
-	fmt.Printf("TOML: %+v\n", m.tomlConfig)
 
 	return nil
 
@@ -121,6 +129,15 @@ func (m *TomlNg) loadFrontends() error {
 		}
 		key := engine.FrontendKey{Id: id}
 		m.Frontends[key] = *f
+		for _, mRef := range rf.Middlewares {
+			middleware, ok := m.KnownMiddlewares[mRef.MiddlewareId]
+			copyOfMiddleware := middleware
+			copyOfMiddleware.Priority = mRef.Priority
+			if !ok {
+				return fmt.Errorf("Middleware %s not loaded or not exist", mRef.MiddlewareId)
+			}
+			m.Middlewares[key] = append(m.Middlewares[key], copyOfMiddleware)
+		}
 	}
 	return nil
 }
@@ -160,6 +177,27 @@ func (m *TomlNg) loadServers() error {
 			}
 			m.Servers[bkey] = append(m.Servers[bkey], *server)
 		}
+	}
+	return nil
+}
+
+func (t *TomlNg) loadMiddlewares() error {
+	for id, ms := range t.tomlConfig.Middlewares {
+		spec := t.Registry.GetSpec(ms.Type)
+		if spec == nil {
+			return fmt.Errorf("middleware of type %s is not supported", ms.Type)
+		}
+		m, err := spec.FromToml(ms.Middleware, &t.tomlMeta)
+		if err != nil {
+			return err
+		}
+		middleware := engine.Middleware{
+			Id:         id,
+			Type:       ms.Type,
+			Middleware: m,
+			Priority:   0,
+		}
+		t.KnownMiddlewares[id] = middleware
 	}
 	return nil
 }

@@ -1,7 +1,9 @@
 package tomlng
 
 import (
+	"github.com/BurntSushi/toml"
 	"github.com/FoxComm/vulcand/engine"
+	//	"github.com/FoxComm/vulcand/plugin"
 )
 
 type EngineTomlConfig struct {
@@ -9,12 +11,18 @@ type EngineTomlConfig struct {
 	Frontends   map[string]Frontend
 	Backends    map[string]Backend
 	Servers     map[string][]engine.Server
-	Middlewares map[string]engine.Middleware
+	Middlewares map[string]MiddlewareFrontend
 }
 
 type Frontend struct {
 	engine.Frontend
-	Settings engine.HTTPFrontendSettings
+	Settings    engine.HTTPFrontendSettings
+	Middlewares []FrontendMiddleware
+}
+
+type FrontendMiddleware struct {
+	MiddlewareId string
+	Priority     int
 }
 
 type Backend struct {
@@ -27,6 +35,7 @@ type Backend struct {
 // 	URL string
 // }
 
-// type Middleware struct {
-// 	Id string
-// }
+type MiddlewareFrontend struct {
+	Type       string
+	Middleware toml.Primitive
+}
