@@ -1,0 +1,23 @@
+[listeners]
+[listeners.default]
+protocol = "http"
+[listeners.default.address]
+network = "tcp"
+address = "0.0.0.0:8000"
+
+[frontends]
+[frontends.origin_backend]
+Route = "Path(`/`)"
+Type = "http"
+BackendId = "origin_backend"
+[frontends.origin_backend.settings.limits]
+MaxBodyBytes = 1024
+
+
+[backends]
+[backends.origin_backend]
+type = "http"
+
+[servers]
+[[servers.origin_backend]]
+url = "http://localhost:8080"

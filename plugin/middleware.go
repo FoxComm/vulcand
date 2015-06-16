@@ -1,7 +1,6 @@
 package plugin
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -20,13 +19,15 @@ type MiddlewareSpec struct {
 	FromCli CliReader
 }
 
-func (ms *MiddlewareSpec) FromJSON(data []byte) (Middleware, error) {
+type UnmarshalFunc func(data []byte, v interface{}) error
+
+func (ms *MiddlewareSpec) FromEncoded(data []byte, decode UnmarshalFunc) (Middleware, error) {
 	// Get a function's type
 	fnType := reflect.TypeOf(ms.FromOther)
 
 	// Create a pointer to the function's first argument
 	ptr := reflect.New(fnType.In(0)).Interface()
-	err := json.Unmarshal(data, &ptr)
+	err := decode(data, &ptr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode %T from JSON, error: %s", ptr, err)
 	}

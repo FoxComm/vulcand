@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"time"
@@ -8,6 +9,15 @@ import (
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 )
+
+type EtcdOptions struct {
+	EtcdNodes       listOptions
+	EtcdKey         string
+	EtcdCaFile      string
+	EtcdCertFile    string
+	EtcdKeyFile     string
+	EtcdConsistency string
+}
 
 type Options struct {
 	ApiPort      int
@@ -19,12 +29,10 @@ type Options struct {
 	Interface string
 	CertPath  string
 
-	EtcdNodes       listOptions
-	EtcdKey         string
-	EtcdCaFile      string
-	EtcdCertFile    string
-	EtcdKeyFile     string
-	EtcdConsistency string
+	EngineType string
+	EtcdOptions
+
+	TomlPath string
 
 	Log         string
 	LogSeverity severity
@@ -77,6 +85,7 @@ func (o *listOptions) Set(value string) error {
 }
 
 func validateOptions(o Options) (Options, error) {
+	var err error
 	if o.EndpointDialTimeout+o.EndpointReadTimeout >= o.ServerWriteTimeout {
 		fmt.Printf("!!!!!! WARN: serverWriteTimout(%s) should be > endpointDialTimeout(%s) + endpointReadTimeout(%s)\n\n",
 			o.ServerWriteTimeout, o.EndpointDialTimeout, o.EndpointReadTimeout)
@@ -89,7 +98,12 @@ func validateOptions(o Options) (Options, error) {
 			fmt.Printf("!!!!!! WARN: Using deprecated writeTimeout flag, use serverWriteTimeout instead\n\n")
 		}
 	})
-	return o, nil
+	switch o.EngineType {
+	case "etcd", "toml", "mem":
+	default:
+		err = errors.New("engineType should be in list ['etcd' 'toml' 'mem']")
+	}
+	return o, err
 }
 
 func ParseCommandLine() (options Options, err error) {
@@ -100,6 +114,8 @@ func ParseCommandLine() (options Options, err error) {
 	flag.StringVar(&options.EtcdKeyFile, "etcdKeyFile", "", "Path to key file for etcd communication")
 	flag.StringVar(&options.EtcdConsistency, "etcdConsistency", etcd.STRONG_CONSISTENCY, "Etcd consistency")
 	flag.StringVar(&options.PidPath, "pidPath", "", "Path to write PID file to")
+	flag.StringVar(&options.EngineType, "engineType", "toml", "Type of engine (etcd, toml)")
+	flag.StringVar(&options.TomlPath, "tomlPath", "config.toml", "Path to toml configuration for engine")
 	flag.IntVar(&options.Port, "port", 8181, "Port to listen on")
 	flag.IntVar(&options.ApiPort, "apiPort", 8182, "Port to provide api on")
 

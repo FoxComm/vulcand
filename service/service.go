@@ -20,6 +20,8 @@ import (
 	"github.com/FoxComm/vulcand/api"
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/engine/etcdng"
+	"github.com/FoxComm/vulcand/engine/memng"
+	"github.com/FoxComm/vulcand/engine/tomlng"
 	"github.com/FoxComm/vulcand/plugin"
 	"github.com/FoxComm/vulcand/proxy"
 	"github.com/FoxComm/vulcand/secret"
@@ -264,17 +266,26 @@ func (s *Service) newEngine() error {
 	if err != nil {
 		return err
 	}
-	ng, err := etcdng.New(
-		s.options.EtcdNodes,
-		s.options.EtcdKey,
-		s.registry,
-		etcdng.Options{
-			EtcdCaFile:      s.options.EtcdCaFile,
-			EtcdCertFile:    s.options.EtcdCertFile,
-			EtcdKeyFile:     s.options.EtcdKeyFile,
-			EtcdConsistency: s.options.EtcdConsistency,
-			Box:             box,
-		})
+	var ng engine.Engine
+
+	switch s.options.EngineType {
+	case "etcd":
+		ng, err = etcdng.New(
+			s.options.EtcdNodes,
+			s.options.EtcdKey,
+			s.registry,
+			etcdng.Options{
+				EtcdCaFile:      s.options.EtcdCaFile,
+				EtcdCertFile:    s.options.EtcdCertFile,
+				EtcdKeyFile:     s.options.EtcdKeyFile,
+				EtcdConsistency: s.options.EtcdConsistency,
+				Box:             box,
+			})
+	case "toml":
+		ng, err = tomlng.New(s.options.TomlPath, s.registry)
+	case "mem":
+		ng = memng.New(s.registry)
+	}
 
 	if err != nil {
 		return err
