@@ -21,3 +21,5 @@ type = "http"
 [servers]
 [[servers.origin_backend]]
 url = "http://localhost:8080"
+[[servers.origin_backend]]
+url = "http://localhost:8081"

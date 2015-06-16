@@ -152,12 +152,12 @@ func (m *TomlNg) loadBackends() error {
 func (m *TomlNg) loadServers() error {
 	for id, servers := range m.tomlConfig.Servers {
 		bkey := engine.BackendKey{Id: id}
-		for _, s := range servers {
-			server, err := engine.NewServer(id, s.URL)
+		for i, s := range servers {
+			skey := fmt.Sprintf("%ssrv%d", id, i)
+			server, err := engine.NewServer(skey, s.URL)
 			if err != nil {
 				return err
 			}
-
 			m.Servers[bkey] = append(m.Servers[bkey], *server)
 		}
 	}
@@ -395,11 +395,11 @@ func (m *TomlNg) UpsertServer(bk engine.BackendKey, srv engine.Server, d time.Du
 	}
 	for i, v := range vals {
 		if v.Id == srv.Id {
-			vals[i] = srv
+			m.Servers[bk][i] = srv
 			return nil
 		}
 	}
-	vals = append(vals, srv)
+	m.Servers[bk] = append(vals, srv)
 	return nil
 }
 
