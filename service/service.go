@@ -154,6 +154,10 @@ func (s *Service) Start() error {
 	}
 }
 
+func (s Service) GetEngine() engine.Engine {
+	return s.ng
+}
+
 func (s *Service) getFiles() (*proxy.FileDescriptor, []*proxy.FileDescriptor, error) {
 	// These files may be passed in by the parent process
 	filesString := os.Getenv(vulcandFilesKey)
@@ -282,16 +286,16 @@ func (s *Service) newEngine() error {
 				Box:             box,
 			})
 	case "toml":
-		ng, err = tomlng.New(s.options.TomlPath, s.registry)
+		ng, err = tomlng.New(s.options.TomlPath, s.options.TomlConfigPaths, s.registry)
 	case "mem":
 		ng = memng.New(s.registry)
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Engine creation error: %v", err)
 	}
 	s.ng = ng
-	return err
+	return nil
 }
 
 func (s *Service) reportSystemMetrics() {

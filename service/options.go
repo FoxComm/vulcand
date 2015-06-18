@@ -19,6 +19,11 @@ type EtcdOptions struct {
 	EtcdConsistency string
 }
 
+type TomlOptions struct {
+	TomlPath        string
+	TomlConfigPaths listOptions
+}
+
 type Options struct {
 	ApiPort      int
 	ApiInterface string
@@ -31,8 +36,7 @@ type Options struct {
 
 	EngineType string
 	EtcdOptions
-
-	TomlPath string
+	TomlOptions
 
 	Log         string
 	LogSeverity severity
@@ -114,8 +118,12 @@ func ParseCommandLine() (options Options, err error) {
 	flag.StringVar(&options.EtcdKeyFile, "etcdKeyFile", "", "Path to key file for etcd communication")
 	flag.StringVar(&options.EtcdConsistency, "etcdConsistency", etcd.STRONG_CONSISTENCY, "Etcd consistency")
 	flag.StringVar(&options.PidPath, "pidPath", "", "Path to write PID file to")
-	flag.StringVar(&options.EngineType, "engineType", "toml", "Type of engine (etcd, toml)")
-	flag.StringVar(&options.TomlPath, "tomlPath", "config.toml", "Path to toml configuration for engine")
+
+	flag.StringVar(&options.EngineType, "engineType", "toml", "Type of engine (etcd, toml, mem)")
+
+	flag.StringVar(&options.TomlPath, "tomlConfig", "config.toml", "Path to toml configuration for engine")
+	flag.Var(&options.TomlConfigPaths, "tomlPath", "list of dirs where Toml configs located")
+
 	flag.IntVar(&options.Port, "port", 8181, "Port to listen on")
 	flag.IntVar(&options.ApiPort, "apiPort", 8182, "Port to provide api on")
 

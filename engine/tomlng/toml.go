@@ -3,7 +3,8 @@ package tomlng
 
 import (
 	"fmt"
-
+	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/FoxComm/vulcand/engine"
@@ -31,12 +32,13 @@ type TomlNg struct {
 	ChangesC chan interface{}
 	ErrorsC  chan error
 
-	tomlConfigPath string
-	tomlConfig     EngineTomlConfig
-	tomlMeta       toml.MetaData
+	tomlConfigPaths []string
+	tomlConfigPath  string
+	tomlConfig      EngineTomlConfig
+	tomlMeta        toml.MetaData
 }
 
-func New(configPath string, r *plugin.Registry) (engine.Engine, error) {
+func New(configPath string, configPaths []string, r *plugin.Registry) (engine.Engine, error) {
 	ng := &TomlNg{
 		Hosts:     map[engine.HostKey]engine.Host{},
 		Frontends: map[engine.FrontendKey]engine.Frontend{},
@@ -50,6 +52,12 @@ func New(configPath string, r *plugin.Registry) (engine.Engine, error) {
 		ChangesC:         make(chan interface{}, 1000),
 		ErrorsC:          make(chan error),
 		tomlConfigPath:   configPath,
+	}
+	for _, p := range configPaths {
+		err := ng.AddConfigPath(p)
+		if err != nil {
+			return nil, err
+		}
 	}
 	err := ng.LoadConfig()
 	return ng, err
@@ -65,10 +73,38 @@ func (m *TomlNg) emit(val interface{}) {
 func (m *TomlNg) Close() {
 }
 
+func (m *TomlNg) AddConfigPath(in string) error {
+	if in == "" {
+		return nil
+	}
+	absin, err := pathAbs(in)
+	if err != nil {
+		return err
+	}
+	if !stringInSlice(absin, m.tomlConfigPaths) {
+		m.tomlConfigPaths = append(m.tomlConfigPaths, absin)
+	}
+
+	return nil
+}
+
 func (m *TomlNg) LoadConfig() error {
 	var err error
 	if m.tomlMeta, err = toml.DecodeFile(m.tomlConfigPath, &m.tomlConfig); err != nil {
 		return err
+	}
+
+	for _, configpath := range m.tomlConfigPaths {
+		configFiles, err := filepath.Glob(path.Join(configpath, "*.toml"))
+		if err != nil {
+			return err
+		}
+		for _, cfg := range configFiles {
+			_, err = toml.DecodeFile(cfg, &m.tomlConfig)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	fmt.Printf("TOML: %+v\n", m.tomlConfig)
