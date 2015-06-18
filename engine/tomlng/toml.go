@@ -225,7 +225,7 @@ func (t *TomlNg) loadMiddlewares() error {
 		}
 		m, err := spec.FromToml(ms.Middleware, &t.tomlMeta)
 
-		if f, ok := m.(engine.MiddlewareEngine); ok {
+		if f, ok := m.(engine.InitMiddlewareEngine); ok {
 			f.InitEngine(t)
 		}
 

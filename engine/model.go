@@ -36,9 +36,13 @@ type KeyPair struct {
 	Cert []byte
 }
 
-// interface for plugins which requires Engine to properly work
-type MiddlewareEngine interface {
+// interfaces for plugins which requires some additional data for initialization
+type InitMiddlewareEngine interface {
 	InitEngine(Engine)
+}
+
+type InitMiddlewareFrontend interface {
+	OnUpsertToFrontend(Frontend)
 }
 
 func NewKeyPair(cert, key []byte) (*KeyPair, error) {

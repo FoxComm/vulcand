@@ -189,6 +189,9 @@ func (f *frontend) rebuild() error {
 
 func (f *frontend) upsertMiddleware(fk engine.FrontendKey, mi engine.Middleware) error {
 	f.middlewares[engine.MiddlewareKey{FrontendKey: fk, Id: mi.Id}] = mi
+	if cast, ok := mi.Middleware.(engine.InitMiddlewareFrontend); ok {
+		cast.OnUpsertToFrontend(f.frontend)
+	}
 	return f.rebuild()
 }
 
