@@ -1,7 +1,7 @@
 package tomlng
 
 import (
-	"github.com/BurntSushi/toml"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/BurntSushi/toml"
 	"github.com/FoxComm/vulcand/engine"
 	//	"github.com/FoxComm/vulcand/plugin"
 )

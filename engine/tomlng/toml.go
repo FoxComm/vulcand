@@ -11,8 +11,8 @@ import (
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/plugin"
 
-	"github.com/BurntSushi/toml"
-	"gopkg.in/fsnotify.v1"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/BurntSushi/toml"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/fsnotify.v1"
 
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 
