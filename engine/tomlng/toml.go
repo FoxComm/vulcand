@@ -67,7 +67,10 @@ func New(configPath string, configPaths []string, r *plugin.Registry) (engine.En
 		}
 	}
 
-	err := ng.LoadConfig()
+	err := ng.syncConfig(func(newConfig *EngineTomlConfig) error {
+		newConfig = &EngineTomlConfig{}
+		return ng.loadConfig(&ng.tomlConfig)
+	})
 	return ng, err
 }
 
@@ -120,12 +123,7 @@ func (m *TomlNg) watchConfigFiles() (err error) {
 						if _, err := toml.DecodeFile(event.Name, &m.tomlConfig); err != nil {
 							return err
 						}
-						if _, err := toml.DecodeFile(event.Name, &newConfig); err != nil {
-							return err
-						}
-
-						_, err = toml.DecodeFile(m.tomlConfigPath, &newConfig)
-						return err
+						return m.loadConfig(newConfig)
 					})
 					if err != nil {
 						log.Errorf("Error while decoding new config file: %s", event.Name)
@@ -134,7 +132,6 @@ func (m *TomlNg) watchConfigFiles() (err error) {
 
 					continue
 				}
-				// log.Infof("Ignoring FS event: %v", event)
 			case err := <-m.tomlWatcher.Errors:
 				log.Errorf("error: %v", err)
 			}
@@ -143,30 +140,26 @@ func (m *TomlNg) watchConfigFiles() (err error) {
 	return
 }
 
-func (m *TomlNg) LoadConfig() error {
-	return m.syncConfig(func(newConfig *EngineTomlConfig) error {
-		// for first loading we can skip loading newConfig
-		newConfig = &EngineTomlConfig{}
-		var err error
-		if m.tomlMeta, err = toml.DecodeFile(m.tomlConfigPath, &m.tomlConfig); err != nil {
+func (m *TomlNg) loadConfig(config *EngineTomlConfig) error {
+	var err error
+	if m.tomlMeta, err = toml.DecodeFile(m.tomlConfigPath, config); err != nil {
+		return err
+	}
+
+	for _, configpath := range m.tomlConfigPaths {
+		configFiles, err := filepath.Glob(path.Join(configpath, "*.toml"))
+		if err != nil {
 			return err
 		}
-
-		for _, configpath := range m.tomlConfigPaths {
-			configFiles, err := filepath.Glob(path.Join(configpath, "*.toml"))
+		for _, cfg := range configFiles {
+			_, err = toml.DecodeFile(cfg, config)
 			if err != nil {
 				return err
 			}
-			for _, cfg := range configFiles {
-				_, err = toml.DecodeFile(cfg, &m.tomlConfig)
-				if err != nil {
-					return err
-				}
-			}
 		}
+	}
 
-		return nil
-	})
+	return nil
 }
 
 // syncConfig do 3 steps
