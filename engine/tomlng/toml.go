@@ -35,16 +35,21 @@ type TomlNg struct {
 	ChangesC chan interface{}
 	ErrorsC  chan error
 
-	tomlConfigPaths []string
-	tomlConfigPath  string
-	tomlConfig      EngineTomlConfig
-	tomlMeta        toml.MetaData
-	tomlSyncerLock  sync.Mutex
+	options        Options
+	tomlConfig     EngineTomlConfig
+	tomlMeta       toml.MetaData
+	tomlSyncerLock sync.Mutex
 
 	tomlWatcher *fsnotify.Watcher
 }
 
-func New(configPath string, configPaths []string, r *plugin.Registry) (engine.Engine, error) {
+type Options struct {
+	MainConfigFilepath string
+	ConfigPaths        []string
+	WatchConfigChanges bool
+}
+
+func New(r *plugin.Registry, options Options) (engine.Engine, error) {
 	ng := &TomlNg{
 		Hosts:     map[engine.HostKey]engine.Host{},
 		Frontends: map[engine.FrontendKey]engine.Frontend{},
@@ -57,11 +62,13 @@ func New(configPath string, configPaths []string, r *plugin.Registry) (engine.En
 		Registry:         r,
 		ChangesC:         make(chan interface{}, 1000),
 		ErrorsC:          make(chan error),
-		tomlConfigPath:   configPath,
+		options:          options,
 	}
-	ng.watchConfigFiles()
+	if options.WatchConfigChanges {
+		ng.watchConfigFiles()
+	}
 
-	for _, p := range configPaths {
+	for _, p := range options.ConfigPaths {
 		if err := ng.AddConfigPath(p); err != nil {
 			return nil, err
 		}
@@ -82,7 +89,9 @@ func (m *TomlNg) emit(val interface{}) {
 }
 
 func (m *TomlNg) Close() {
-	m.tomlWatcher.Close()
+	if m.options.WatchConfigChanges {
+		m.tomlWatcher.Close()
+	}
 }
 
 func (m *TomlNg) AddConfigPath(in string) error {
@@ -99,9 +108,11 @@ func (m *TomlNg) AddConfigPath(in string) error {
 		return err
 	}
 
-	if !stringInSlice(absin, m.tomlConfigPaths) && configPathExists {
-		m.tomlWatcher.Add(absin)
-		m.tomlConfigPaths = append(m.tomlConfigPaths, absin)
+	if !stringInSlice(absin, m.options.ConfigPaths) && configPathExists {
+		if m.options.WatchConfigChanges {
+			m.tomlWatcher.Add(absin)
+		}
+		m.options.ConfigPaths = append(m.options.ConfigPaths, absin)
 	}
 
 	return nil
@@ -142,11 +153,11 @@ func (m *TomlNg) watchConfigFiles() (err error) {
 
 func (m *TomlNg) loadConfig(config *EngineTomlConfig) error {
 	var err error
-	if m.tomlMeta, err = toml.DecodeFile(m.tomlConfigPath, config); err != nil {
+	if m.tomlMeta, err = toml.DecodeFile(m.options.MainConfigFilepath, config); err != nil {
 		return err
 	}
 
-	for _, configpath := range m.tomlConfigPaths {
+	for _, configpath := range m.options.ConfigPaths {
 		configFiles, err := filepath.Glob(path.Join(configpath, "*.toml"))
 		if err != nil {
 			return err
@@ -366,10 +377,8 @@ func (m *TomlNg) syncServers(newConfig EngineTomlConfig, keysCurrent []engine.Se
 		}
 	}
 
-	fmt.Printf("newKeys: %+v\n", newKeys)
 	for _, key := range keysCurrent {
 		if !stringInSlice(key.Id, newKeys) {
-			fmt.Printf("delete server: %s\n", key.Id)
 			if err := m.DeleteServer(key); err != nil {
 				return err
 			}

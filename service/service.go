@@ -286,7 +286,12 @@ func (s *Service) newEngine() error {
 				Box:             box,
 			})
 	case "toml":
-		ng, err = tomlng.New(s.options.TomlPath, s.options.TomlConfigPaths, s.registry)
+		ng, err = tomlng.New(s.registry,
+			tomlng.Options{
+				MainConfigFilepath: s.options.TomlPath,
+				ConfigPaths:        s.options.TomlConfigPaths,
+				WatchConfigChanges: s.options.TomlWatchConfigChanges,
+			})
 	case "mem":
 		ng = memng.New(s.registry)
 	}

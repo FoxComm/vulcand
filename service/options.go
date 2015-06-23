@@ -20,8 +20,9 @@ type EtcdOptions struct {
 }
 
 type TomlOptions struct {
-	TomlPath        string
-	TomlConfigPaths listOptions
+	TomlPath               string
+	TomlWatchConfigChanges bool
+	TomlConfigPaths        listOptions
 }
 
 type Options struct {
@@ -122,6 +123,7 @@ func ParseCommandLine() (options Options, err error) {
 	flag.StringVar(&options.EngineType, "engineType", "toml", "Type of engine (etcd, toml, mem)")
 
 	flag.StringVar(&options.TomlPath, "tomlConfig", "config.toml", "Path to toml configuration for engine")
+	flag.BoolVar(&options.TomlWatchConfigChanges, "tomlWatch", false, "Automatically watch and reload config changes. For usage in development env.")
 	flag.Var(&options.TomlConfigPaths, "tomlPath", "list of dirs where Toml configs located")
 
 	flag.IntVar(&options.Port, "port", 8181, "Port to listen on")
