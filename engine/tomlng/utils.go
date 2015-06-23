@@ -3,6 +3,7 @@ package tomlng
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 )
 
 func pathAbs(inPath string) (string, error) {
@@ -33,4 +34,24 @@ func stringInSlice(a string, list []string) bool {
 		}
 	}
 	return false
+}
+
+// returns list of string keys for map[string]interface{}
+// returns empty list for type mismatching
+func mapStringKeys(m interface{}) []string {
+	v := reflect.ValueOf(m)
+	keys := []string{}
+
+	if v.Kind() != reflect.Map {
+		return keys
+	}
+
+	valueKeys := v.MapKeys()
+	for _, k := range valueKeys {
+		if k.Kind() != reflect.String {
+			return keys
+		}
+		keys = append(keys, k.String())
+	}
+	return keys
 }
