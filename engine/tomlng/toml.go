@@ -3,6 +3,7 @@ package tomlng
 
 import (
 	"fmt"
+	"io"
 	"path"
 	"path/filepath"
 	"sync"
@@ -153,8 +154,10 @@ func (m *TomlNg) watchConfigFiles() (err error) {
 
 func (m *TomlNg) loadConfig(config *EngineTomlConfig) error {
 	var err error
-	if m.tomlMeta, err = toml.DecodeFile(m.options.MainConfigFilepath, config); err != nil {
-		return err
+	if m.options.MainConfigFilepath != "" {
+		if m.tomlMeta, err = toml.DecodeFile(m.options.MainConfigFilepath, config); err != nil {
+			return err
+		}
 	}
 
 	for _, configpath := range m.options.ConfigPaths {
@@ -171,6 +174,11 @@ func (m *TomlNg) loadConfig(config *EngineTomlConfig) error {
 	}
 
 	return nil
+}
+
+func (m *TomlNg) ReadConfig(r io.Reader) (err error) {
+	m.tomlMeta, err = toml.DecodeReader(r, &m.tomlConfig)
+	return
 }
 
 // syncConfig do 3 steps
