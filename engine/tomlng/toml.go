@@ -132,13 +132,10 @@ func (m *TomlNg) watchConfigFiles() (err error) {
 			case event := <-m.tomlWatcher.Events:
 				if event.Op&opsWatched > 0 && path.Ext(event.Name) == ".toml" {
 					err = m.syncConfig(func(newConfig *EngineTomlConfig) error {
-						if _, err := toml.DecodeFile(event.Name, &m.tomlConfig); err != nil {
-							return err
-						}
 						return m.loadConfig(newConfig)
 					})
 					if err != nil {
-						log.Errorf("Error while decoding new config file: %s", event.Name)
+						log.Errorf("Error while decoding new config file: %s, %s", event.Name, err.Error())
 						continue
 					}
 
