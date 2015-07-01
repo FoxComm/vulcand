@@ -3,14 +3,18 @@ package tomlng
 
 import (
 	"fmt"
+	"io"
 	"path"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/plugin"
 
-	"github.com/BurntSushi/toml"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/BurntSushi/toml"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/fsnotify.v1"
+
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 
 	// "io/ioutil"
@@ -32,13 +36,21 @@ type TomlNg struct {
 	ChangesC chan interface{}
 	ErrorsC  chan error
 
-	tomlConfigPaths []string
-	tomlConfigPath  string
-	tomlConfig      EngineTomlConfig
-	tomlMeta        toml.MetaData
+	options        Options
+	tomlConfig     EngineTomlConfig
+	tomlMeta       toml.MetaData
+	tomlSyncerLock sync.Mutex
+
+	tomlWatcher *fsnotify.Watcher
 }
 
-func New(configPath string, configPaths []string, r *plugin.Registry) (engine.Engine, error) {
+type Options struct {
+	MainConfigFilepath string
+	ConfigPaths        []string
+	WatchConfigChanges bool
+}
+
+func New(r *plugin.Registry, options Options) (engine.Engine, error) {
 	ng := &TomlNg{
 		Hosts:     map[engine.HostKey]engine.Host{},
 		Frontends: map[engine.FrontendKey]engine.Frontend{},
@@ -51,15 +63,22 @@ func New(configPath string, configPaths []string, r *plugin.Registry) (engine.En
 		Registry:         r,
 		ChangesC:         make(chan interface{}, 1000),
 		ErrorsC:          make(chan error),
-		tomlConfigPath:   configPath,
+		options:          options,
 	}
-	for _, p := range configPaths {
-		err := ng.AddConfigPath(p)
-		if err != nil {
+	if options.WatchConfigChanges {
+		ng.watchConfigFiles()
+	}
+
+	for _, p := range options.ConfigPaths {
+		if err := ng.AddConfigPath(p); err != nil {
 			return nil, err
 		}
 	}
-	err := ng.LoadConfig()
+
+	err := ng.syncConfig(func(newConfig *EngineTomlConfig) error {
+		newConfig = &EngineTomlConfig{}
+		return ng.loadConfig(&ng.tomlConfig)
+	})
 	return ng, err
 }
 
@@ -71,6 +90,9 @@ func (m *TomlNg) emit(val interface{}) {
 }
 
 func (m *TomlNg) Close() {
+	if m.options.WatchConfigChanges {
+		m.tomlWatcher.Close()
+	}
 }
 
 func (m *TomlNg) AddConfigPath(in string) error {
@@ -81,60 +103,146 @@ func (m *TomlNg) AddConfigPath(in string) error {
 	if err != nil {
 		return err
 	}
-	if !stringInSlice(absin, m.tomlConfigPaths) {
-		m.tomlConfigPaths = append(m.tomlConfigPaths, absin)
+
+	configPathExists, err := pathExists(absin)
+	if err != nil {
+		return err
+	}
+	if !configPathExists {
+		return fmt.Errorf("Config path: %s not exists", absin)
+	}
+
+	if !stringInSlice(absin, m.options.ConfigPaths) && configPathExists {
+		if m.options.WatchConfigChanges {
+			m.tomlWatcher.Add(absin)
+		}
+		m.options.ConfigPaths = append(m.options.ConfigPaths, absin)
 	}
 
 	return nil
 }
 
-func (m *TomlNg) LoadConfig() error {
-	var err error
-	if m.tomlMeta, err = toml.DecodeFile(m.tomlConfigPath, &m.tomlConfig); err != nil {
+func (m *TomlNg) watchConfigFiles() (err error) {
+	m.tomlWatcher, err = fsnotify.NewWatcher()
+	if err != nil {
 		return err
 	}
 
-	for _, configpath := range m.tomlConfigPaths {
+	go func() {
+		opsWatched := fsnotify.Create | fsnotify.Write | fsnotify.Remove
+		for {
+			select {
+			case event := <-m.tomlWatcher.Events:
+				if event.Op&opsWatched > 0 && path.Ext(event.Name) == ".toml" {
+					err = m.syncConfig(func(newConfig *EngineTomlConfig) error {
+						return m.loadConfig(newConfig)
+					})
+					if err != nil {
+						log.Errorf("Error while decoding new config file: %s, %s", event.Name, err.Error())
+						continue
+					}
+
+					continue
+				}
+			case err := <-m.tomlWatcher.Errors:
+				log.Errorf("error: %v", err)
+			}
+		}
+	}()
+	return
+}
+
+func (m *TomlNg) loadConfig(config *EngineTomlConfig) error {
+	var err error
+	if m.options.MainConfigFilepath != "" {
+		if m.tomlMeta, err = toml.DecodeFile(m.options.MainConfigFilepath, config); err != nil {
+			return err
+		}
+	}
+
+	for _, configpath := range m.options.ConfigPaths {
 		configFiles, err := filepath.Glob(path.Join(configpath, "*.toml"))
 		if err != nil {
 			return err
 		}
 		for _, cfg := range configFiles {
-			_, err = toml.DecodeFile(cfg, &m.tomlConfig)
+			_, err = toml.DecodeFile(cfg, config)
 			if err != nil {
 				return err
 			}
 		}
 	}
 
-	fmt.Printf("TOML: %+v\n", m.tomlConfig)
+	return nil
+}
 
-	if err := m.loadListeners(); err != nil {
+func (m *TomlNg) ReadConfig(r io.Reader) (err error) {
+	m.tomlMeta, err = toml.DecodeReader(r, &m.tomlConfig)
+	return
+}
+
+// syncConfig do 3 steps
+// 1. First memoize current config
+// 2. decode new values into current and new tomlConfig structures
+// 3. Add new entities to state and delete obosoletes using info from steps 1,2
+func (m *TomlNg) syncConfig(decodePhaseFunc func(newConfig *EngineTomlConfig) error) error {
+	m.tomlSyncerLock.Lock()
+	defer m.tomlSyncerLock.Unlock()
+	// Memoize current config
+	existingListeners := mapStringKeys(m.tomlConfig.Listeners)
+	existingBackends := mapStringKeys(m.tomlConfig.Backends)
+	existingMiddlewares := mapStringKeys(m.tomlConfig.Middlewares)
+
+	existingServers := []engine.ServerKey{}
+	for key, servers := range m.tomlConfig.Servers {
+		for _, srv := range servers {
+			sk := engine.ServerKey{Id: serverKey(key, srv), BackendKey: engine.BackendKey{Id: key}}
+			existingServers = append(existingServers, sk)
+		}
+	}
+	// name => list of middlewares
+	existingFrontends := map[string][]string{}
+	for key, f := range m.tomlConfig.Frontends {
+		existingFrontends[key] = []string{}
+		for _, m := range f.Middlewares {
+			existingFrontends[key] = append(existingFrontends[key], m.MiddlewareId)
+		}
+	}
+
+	// decode new values
+	var newConfig EngineTomlConfig
+	if err := decodePhaseFunc(&newConfig); err != nil {
 		return err
 	}
 
-	if err := m.loadMiddlewares(); err != nil {
+	// sync state
+	if err := m.syncListeners(newConfig, existingListeners); err != nil {
 		return err
 	}
 
-	if err := m.loadFrontends(); err != nil {
+	if err := m.syncMiddlewares(newConfig, existingMiddlewares); err != nil {
 		return err
 	}
 
-	if err := m.loadBackends(); err != nil {
+	if err := m.syncBackends(newConfig, existingBackends); err != nil {
 		return err
 	}
 
-	if err := m.loadServers(); err != nil {
+	if err := m.syncFrontends(newConfig, existingFrontends); err != nil {
+		return err
+	}
+
+	if err := m.syncServers(newConfig, existingServers); err != nil {
 		return err
 	}
 
 	return nil
-
 }
 
-func (m *TomlNg) loadListeners() error {
+func (m *TomlNg) syncListeners(newConfig EngineTomlConfig, keysCurrent []string) error {
+	// First, add listeners, that should be added
 	for id, lr := range m.tomlConfig.Listeners {
+		// Create listener instance from config
 		lr.Id = id
 		if lr.Protocol == engine.HTTPS && lr.Settings != nil {
 			if _, err := engine.NewTLSConfig(&lr.Settings.TLS); err != nil {
@@ -146,13 +254,24 @@ func (m *TomlNg) loadListeners() error {
 		if err != nil {
 			return err
 		}
-		key := engine.ListenerKey{Id: id}
-		m.Listeners[key] = *newLr
+
+		if err := m.UpsertListener(*newLr); err != nil {
+			return err
+		}
+	}
+
+	// Second, remove listeners that should not be there any more
+	for _, key := range keysCurrent {
+		if _, ok := newConfig.Listeners[key]; !ok {
+			if err := m.DeleteListener(engine.ListenerKey{Id: key}); err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }
 
-func (m *TomlNg) loadFrontends() error {
+func (m *TomlNg) syncFrontends(newConfig EngineTomlConfig, currentCfg map[string][]string) error {
 	for id, rf := range m.tomlConfig.Frontends {
 		rf.Id = id
 		if rf.Type != engine.HTTP {
@@ -163,22 +282,54 @@ func (m *TomlNg) loadFrontends() error {
 		if err != nil {
 			return err
 		}
-		key := engine.FrontendKey{Id: id}
-		m.Frontends[key] = *f
+		if err := m.UpsertFrontend(*f, 0); err != nil {
+			return err
+		}
+
+		newMiddlewareList := []string{}
 		for _, mRef := range rf.Middlewares {
 			middleware, ok := m.KnownMiddlewares[mRef.MiddlewareId]
-			copyOfMiddleware := middleware
-			copyOfMiddleware.Priority = mRef.Priority
 			if !ok {
 				return fmt.Errorf("Middleware %s not loaded or not exist", mRef.MiddlewareId)
 			}
-			m.Middlewares[key] = append(m.Middlewares[key], copyOfMiddleware)
+			copyOfMiddleware := middleware
+			copyOfMiddleware.Priority = mRef.Priority
+
+			if err := m.UpsertMiddleware(engine.FrontendKey{Id: rf.Id}, copyOfMiddleware, 0); err != nil {
+				return err
+			}
+			newMiddlewareList = append(newMiddlewareList, mRef.MiddlewareId)
+		}
+
+		if currentMiddlewareList, ok := currentCfg[rf.Id]; ok {
+			for _, key := range currentMiddlewareList {
+				if !stringInSlice(key, newMiddlewareList) {
+					if err := m.DeleteMiddleware(engine.MiddlewareKey{FrontendKey: f.GetKey(), Id: key}); err != nil {
+						return err
+					}
+				}
+			}
+		}
+
+	}
+
+	// Second, remove frontends that should not be there any more
+	keysCurrent := []string{}
+	for k, _ := range currentCfg {
+		keysCurrent = append(keysCurrent, k)
+	}
+
+	for _, key := range keysCurrent {
+		if _, ok := newConfig.Frontends[key]; !ok {
+			if err := m.DeleteFrontend(engine.FrontendKey{Id: key}); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
-func (m *TomlNg) loadBackends() error {
+func (m *TomlNg) syncBackends(newConfig EngineTomlConfig, keysCurrent []string) error {
 	for id, rb := range m.tomlConfig.Backends {
 		rb.Id = id
 
@@ -196,28 +347,55 @@ func (m *TomlNg) loadBackends() error {
 		if err != nil {
 			return err
 		}
-		key := engine.BackendKey{Id: id}
-		m.Backends[key] = *b
+		if err := m.UpsertBackend(*b); err != nil {
+			return err
+		}
 	}
-	return nil
-}
-
-func (m *TomlNg) loadServers() error {
-	for id, servers := range m.tomlConfig.Servers {
-		bkey := engine.BackendKey{Id: id}
-		for i, s := range servers {
-			skey := fmt.Sprintf("%ssrv%d", id, i)
-			server, err := engine.NewServer(skey, s.URL)
-			if err != nil {
+	// Second, remove backends that should not be there any more
+	for _, key := range keysCurrent {
+		if _, ok := newConfig.Backends[key]; !ok {
+			if err := m.DeleteBackend(engine.BackendKey{Id: key}); err != nil {
 				return err
 			}
-			m.Servers[bkey] = append(m.Servers[bkey], *server)
 		}
 	}
 	return nil
 }
 
-func (t *TomlNg) loadMiddlewares() error {
+func (m *TomlNg) syncServers(newConfig EngineTomlConfig, keysCurrent []engine.ServerKey) error {
+	for id, servers := range m.tomlConfig.Servers {
+		bkey := engine.BackendKey{Id: id}
+		for _, s := range servers {
+			skey := serverKey(id, s)
+			server, err := engine.NewServer(skey, s.URL)
+			if err != nil {
+				return err
+			}
+			if err := m.UpsertServer(bkey, *server, 0); err != nil {
+				return err
+			}
+		}
+	}
+	// Second, remove servers that should not be there any more
+	newKeys := []string{}
+	for bkey, servers := range newConfig.Servers {
+		for _, srv := range servers {
+			newKey := serverKey(bkey, srv)
+			newKeys = append(newKeys, newKey)
+		}
+	}
+
+	for _, key := range keysCurrent {
+		if !stringInSlice(key.Id, newKeys) {
+			if err := m.DeleteServer(key); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (t *TomlNg) syncMiddlewares(newConfig EngineTomlConfig, keysCurrent []string) error {
 	for id, ms := range t.tomlConfig.Middlewares {
 		spec := t.Registry.GetSpec(ms.Type)
 		if spec == nil {
@@ -239,6 +417,13 @@ func (t *TomlNg) loadMiddlewares() error {
 			Priority:   0,
 		}
 		t.KnownMiddlewares[id] = middleware
+	}
+
+	// Second, remove middlewares that should not be there any more
+	for _, key := range keysCurrent {
+		if _, ok := newConfig.Middlewares[key]; !ok {
+			delete(t.KnownMiddlewares, key)
+		}
 	}
 	return nil
 }
@@ -295,11 +480,13 @@ func (m *TomlNg) GetListener(lk engine.ListenerKey) (*engine.Listener, error) {
 }
 
 func (m *TomlNg) UpsertListener(l engine.Listener) error {
+	key := engine.ListenerKey{Id: l.Id}
+
 	defer func() {
 		m.emit(&engine.ListenerUpserted{Listener: l})
 	}()
-	lk := engine.ListenerKey{l.Id}
-	m.Listeners[lk] = l
+
+	m.Listeners[key] = l
 	return nil
 }
 
@@ -369,7 +556,7 @@ func (m *TomlNg) GetMiddleware(mk engine.MiddlewareKey) (*engine.Middleware, err
 
 func (m *TomlNg) UpsertMiddleware(fk engine.FrontendKey, md engine.Middleware, d time.Duration) error {
 	if _, ok := m.Frontends[fk]; !ok {
-		return &engine.NotFoundError{Message: fmt.Sprintf("'%v' not found", fk)}
+		return &engine.NotFoundError{Message: fmt.Sprintf("Can't upsert middleware %s, Frontend %v' not found", md.Id, fk)}
 	}
 	defer func() {
 		m.emit(&engine.MiddlewareUpserted{FrontendKey: fk, Middleware: md})
@@ -516,4 +703,8 @@ func (m *TomlNg) Subscribe(changes chan interface{}, cancelC chan bool) error {
 			return err
 		}
 	}
+}
+
+func serverKey(backendId string, server engine.Server) string {
+	return fmt.Sprintf("%s%s", backendId, server.URL)
 }
