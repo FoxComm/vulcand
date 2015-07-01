@@ -108,6 +108,9 @@ func (m *TomlNg) AddConfigPath(in string) error {
 	if err != nil {
 		return err
 	}
+	if !configPathExists {
+		return fmt.Errorf("Config path: %s not exists", absin)
+	}
 
 	if !stringInSlice(absin, m.options.ConfigPaths) && configPathExists {
 		if m.options.WatchConfigChanges {
