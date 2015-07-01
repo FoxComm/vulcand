@@ -12,6 +12,7 @@ import (
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/manners"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/metrics"
+
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll/registry"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll/vulcan/middleware"
 )

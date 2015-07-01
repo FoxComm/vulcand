@@ -3,7 +3,7 @@ package plugin
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/BurntSushi/toml"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/BurntSushi/toml"
 	"net/http"
 	"reflect"
 
