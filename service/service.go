@@ -51,6 +51,7 @@ type Service struct {
 	apiApp        *scroll.App
 	errorC        chan error
 	sigC          chan os.Signal
+	stopC         chan bool
 	supervisor    *supervisor.Supervisor
 	metricsClient metrics.Client
 	apiServer     *manners.GracefulServer
@@ -64,7 +65,8 @@ func NewService(options Options, registry *plugin.Registry) *Service {
 		options:  options,
 		errorC:   make(chan error),
 		// Channel receiving signals has to be non blocking, otherwise the service can miss a signal.
-		sigC: make(chan os.Signal, 1024),
+		sigC:  make(chan os.Signal, 1024),
+		stopC: make(chan bool, 1),
 	}
 }
 
@@ -121,6 +123,11 @@ func (s *Service) Start() error {
 	// Block until a signal is received or we got an error
 	for {
 		select {
+		case <-s.stopC:
+			log.Infof("Get stop message, shutting down gracefully")
+			s.supervisor.Stop(true)
+			log.Infof("All servers stopped")
+			return nil
 		case signal := <-s.sigC:
 			switch signal {
 			case syscall.SIGTERM, syscall.SIGINT:
@@ -152,6 +159,10 @@ func (s *Service) Start() error {
 			return err
 		}
 	}
+}
+
+func (s *Service) Stop() {
+	s.stopC <- true
 }
 
 func (s Service) GetEngine() engine.Engine {
