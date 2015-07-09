@@ -6,6 +6,7 @@ import (
 	"io"
 	"path"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -706,5 +707,7 @@ func (m *TomlNg) Subscribe(changes chan interface{}, cancelC chan bool) error {
 }
 
 func serverKey(backendId string, server engine.Server) string {
-	return fmt.Sprintf("%s%s", backendId, server.URL)
+	urlPart := strings.Replace(server.URL, "://", "_", -1)
+	urlPart = strings.Replace(urlPart, ":", "_", -1)
+	return fmt.Sprintf("%s_%s", backendId, urlPart)
 }
