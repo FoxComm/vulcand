@@ -21,7 +21,7 @@
 		{
 			"ImportPath": "github.com/codegangsta/cli",
 			"Comment": "1.2.0-62-gbf4a526",
-			"Rev": "bf4a526f48af7badd25d2cb02d587e1b01be3b50"
+			"Rev": "f9982619ccace7df963bb7f6d1de3a6f014ff709"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",
