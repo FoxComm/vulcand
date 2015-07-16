@@ -71,7 +71,9 @@ func NewService(options Options, registry *plugin.Registry) *Service {
 }
 
 func (s *Service) Start() error {
-	log.EnsureLoggerExist(s.options.Log, s.options.LogSeverity.String())
+	if err := log.EnsureLoggerExist(s.options.Log, s.options.LogSeverity.String()); err != nil {
+		return err
+	}
 
 	log.Infof("Service starts with options: %#v", s.options)
 
