@@ -8,11 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
 	"github.com/FoxComm/vulcand/api"
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/engine/memng"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/plugin/registry"
 	"github.com/FoxComm/vulcand/proxy"
 	"github.com/FoxComm/vulcand/secret"
@@ -38,7 +38,7 @@ type CmdSuite struct {
 var _ = Suite(&CmdSuite{})
 
 func (s *CmdSuite) SetUpSuite(c *C) {
-	log.Init([]*log.LogConfig{&log.LogConfig{Name: "console"}})
+	log.EnsureLoggerExist("console", "error")
 }
 
 func (s *CmdSuite) SetUpTest(c *C) {
@@ -116,8 +116,8 @@ func (s *CmdSuite) TestHostCRUD(c *C) {
 }
 
 func (s *CmdSuite) TestLogSeverity(c *C) {
-	for _, sev := range []log.Severity{log.SeverityInfo, log.SeverityWarn, log.SeverityError} {
-		c.Assert(s.run("log", "set_severity", "-s", sev.String()), Matches, ".*updated.*")
+	for _, sev := range []string{"INFO", "WARN", "ERROR"} {
+		c.Assert(s.run("log", "set_severity", "-s", sev), Matches, ".*updated.*")
 		c.Assert(s.run("log", "get_severity"), Matches, fmt.Sprintf(".*%v.*", sev))
 	}
 }
