@@ -215,6 +215,7 @@ func (m *TomlNg) syncConfig(decodePhaseFunc func(newConfig *EngineTomlConfig) er
 	if err := decodePhaseFunc(&newConfig); err != nil {
 		return err
 	}
+	m.tomlConfig = newConfig
 
 	// sync state
 	if err := m.syncListeners(newConfig, existingListeners); err != nil {
