@@ -77,7 +77,6 @@ func New(r *plugin.Registry, options Options) (engine.Engine, error) {
 	}
 
 	err := ng.syncConfig(func(newConfig *EngineTomlConfig) error {
-		newConfig = &EngineTomlConfig{}
 		return ng.loadConfig(&ng.tomlConfig)
 	})
 	return ng, err
@@ -218,30 +217,30 @@ func (m *TomlNg) syncConfig(decodePhaseFunc func(newConfig *EngineTomlConfig) er
 	m.tomlConfig = newConfig
 
 	// sync state
-	if err := m.syncListeners(newConfig, existingListeners); err != nil {
+	if err := m.syncListeners(existingListeners); err != nil {
 		return err
 	}
 
-	if err := m.syncMiddlewares(newConfig, existingMiddlewares); err != nil {
+	if err := m.syncMiddlewares(existingMiddlewares); err != nil {
 		return err
 	}
 
-	if err := m.syncBackends(newConfig, existingBackends); err != nil {
+	if err := m.syncBackends(existingBackends); err != nil {
 		return err
 	}
 
-	if err := m.syncFrontends(newConfig, existingFrontends); err != nil {
+	if err := m.syncFrontends(existingFrontends); err != nil {
 		return err
 	}
 
-	if err := m.syncServers(newConfig, existingServers); err != nil {
+	if err := m.syncServers(existingServers); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *TomlNg) syncListeners(newConfig EngineTomlConfig, keysCurrent []string) error {
+func (m *TomlNg) syncListeners(keysCurrent []string) error {
 	// First, add listeners, that should be added
 	for id, lr := range m.tomlConfig.Listeners {
 		// Create listener instance from config
@@ -264,7 +263,7 @@ func (m *TomlNg) syncListeners(newConfig EngineTomlConfig, keysCurrent []string)
 
 	// Second, remove listeners that should not be there any more
 	for _, key := range keysCurrent {
-		if _, ok := newConfig.Listeners[key]; !ok {
+		if _, ok := m.tomlConfig.Listeners[key]; !ok {
 			if err := m.DeleteListener(engine.ListenerKey{Id: key}); err != nil {
 				return err
 			}
@@ -273,7 +272,7 @@ func (m *TomlNg) syncListeners(newConfig EngineTomlConfig, keysCurrent []string)
 	return nil
 }
 
-func (m *TomlNg) syncFrontends(newConfig EngineTomlConfig, currentCfg map[string][]string) error {
+func (m *TomlNg) syncFrontends(currentCfg map[string][]string) error {
 	for id, rf := range m.tomlConfig.Frontends {
 		rf.Id = id
 		if rf.Type != engine.HTTP {
@@ -322,7 +321,7 @@ func (m *TomlNg) syncFrontends(newConfig EngineTomlConfig, currentCfg map[string
 	}
 
 	for _, key := range keysCurrent {
-		if _, ok := newConfig.Frontends[key]; !ok {
+		if _, ok := m.tomlConfig.Frontends[key]; !ok {
 			if err := m.DeleteFrontend(engine.FrontendKey{Id: key}); err != nil {
 				return err
 			}
@@ -331,7 +330,7 @@ func (m *TomlNg) syncFrontends(newConfig EngineTomlConfig, currentCfg map[string
 	return nil
 }
 
-func (m *TomlNg) syncBackends(newConfig EngineTomlConfig, keysCurrent []string) error {
+func (m *TomlNg) syncBackends(keysCurrent []string) error {
 	for id, rb := range m.tomlConfig.Backends {
 		rb.Id = id
 
@@ -355,7 +354,7 @@ func (m *TomlNg) syncBackends(newConfig EngineTomlConfig, keysCurrent []string) 
 	}
 	// Second, remove backends that should not be there any more
 	for _, key := range keysCurrent {
-		if _, ok := newConfig.Backends[key]; !ok {
+		if _, ok := m.tomlConfig.Backends[key]; !ok {
 			if err := m.DeleteBackend(engine.BackendKey{Id: key}); err != nil {
 				return err
 			}
@@ -364,7 +363,7 @@ func (m *TomlNg) syncBackends(newConfig EngineTomlConfig, keysCurrent []string) 
 	return nil
 }
 
-func (m *TomlNg) syncServers(newConfig EngineTomlConfig, keysCurrent []engine.ServerKey) error {
+func (m *TomlNg) syncServers(keysCurrent []engine.ServerKey) error {
 	for id, servers := range m.tomlConfig.Servers {
 		bkey := engine.BackendKey{Id: id}
 		for _, s := range servers {
@@ -380,7 +379,7 @@ func (m *TomlNg) syncServers(newConfig EngineTomlConfig, keysCurrent []engine.Se
 	}
 	// Second, remove servers that should not be there any more
 	newKeys := []string{}
-	for bkey, servers := range newConfig.Servers {
+	for bkey, servers := range m.tomlConfig.Servers {
 		for _, srv := range servers {
 			newKey := serverKey(bkey, srv)
 			newKeys = append(newKeys, newKey)
@@ -397,7 +396,7 @@ func (m *TomlNg) syncServers(newConfig EngineTomlConfig, keysCurrent []engine.Se
 	return nil
 }
 
-func (t *TomlNg) syncMiddlewares(newConfig EngineTomlConfig, keysCurrent []string) error {
+func (t *TomlNg) syncMiddlewares(keysCurrent []string) error {
 	for id, ms := range t.tomlConfig.Middlewares {
 		spec := t.Registry.GetSpec(ms.Type)
 		if spec == nil {
@@ -423,7 +422,7 @@ func (t *TomlNg) syncMiddlewares(newConfig EngineTomlConfig, keysCurrent []strin
 
 	// Second, remove middlewares that should not be there any more
 	for _, key := range keysCurrent {
-		if _, ok := newConfig.Middlewares[key]; !ok {
+		if _, ok := t.tomlConfig.Middlewares[key]; !ok {
 			delete(t.KnownMiddlewares, key)
 		}
 	}
