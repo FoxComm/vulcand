@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
 	"github.com/FoxComm/vulcand/anomaly"
 	"github.com/FoxComm/vulcand/engine"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/plugin"
 )
 
@@ -107,15 +107,13 @@ func (c *ProxyController) getStatus(w http.ResponseWriter, r *http.Request, para
 
 func (c *ProxyController) getLogSeverity(w http.ResponseWriter, r *http.Request, params map[string]string) (interface{}, error) {
 	return scroll.Response{
-		"severity": log.GetSeverity().String(),
+		"severity": log.GetSeverity(),
 	}, nil
 }
 
 func (c *ProxyController) updateLogSeverity(w http.ResponseWriter, r *http.Request, params map[string]string) (interface{}, error) {
-	s, err := log.SeverityFromString(r.Form.Get("severity"))
-	if err != nil {
-		return nil, formatError(err)
-	}
+	// s, err := log.SeverityFromString()
+	s := r.Form.Get("severity")
 	log.SetSeverity(s)
 	return scroll.Response{"message": fmt.Sprintf("Severity has been updated to %v", s)}, nil
 }

@@ -16,7 +16,7 @@ import (
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/BurntSushi/toml"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/fsnotify.v1"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/log"
 
 	// "io/ioutil"
 	// "os"

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/engine/test"
 	"github.com/FoxComm/vulcand/plugin/registry"
 

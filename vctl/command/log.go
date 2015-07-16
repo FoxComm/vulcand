@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/log"
 )
 
 func NewLogCommand(cmd *Command) cli.Command {

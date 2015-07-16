@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/manners"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/metrics"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
@@ -22,6 +21,7 @@ import (
 	"github.com/FoxComm/vulcand/engine/etcdng"
 	"github.com/FoxComm/vulcand/engine/memng"
 	"github.com/FoxComm/vulcand/engine/tomlng"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/plugin"
 	"github.com/FoxComm/vulcand/proxy"
 	"github.com/FoxComm/vulcand/secret"
@@ -71,9 +71,7 @@ func NewService(options Options, registry *plugin.Registry) *Service {
 }
 
 func (s *Service) Start() error {
-	log.Init([]*log.LogConfig{&log.LogConfig{Name: s.options.Log}})
-
-	log.SetSeverity(s.options.LogSeverity.s)
+	log.EnsureLoggerExist(s.options.Log, s.options.LogSeverity.String())
 
 	log.Infof("Service starts with options: %#v", s.options)
 
