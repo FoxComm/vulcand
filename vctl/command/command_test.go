@@ -38,7 +38,8 @@ type CmdSuite struct {
 var _ = Suite(&CmdSuite{})
 
 func (s *CmdSuite) SetUpSuite(c *C) {
-	log.EnsureLoggerExist("console", "error")
+	err := log.EnsureLoggerExist("console", "error")
+	c.Assert(err, IsNil)
 }
 
 func (s *CmdSuite) SetUpTest(c *C) {

@@ -31,7 +31,8 @@ type ApiSuite struct {
 var _ = Suite(&ApiSuite{})
 
 func (s *ApiSuite) SetUpSuite(c *C) {
-	log.EnsureLoggerExist("console", "error")
+	err := log.EnsureLoggerExist("console", "error")
+	c.Assert(err, IsNil)
 }
 
 func (s *ApiSuite) SetUpTest(c *C) {
