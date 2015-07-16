@@ -67,7 +67,7 @@ func GetSeverity() string {
 }
 
 func SetSeverity(s string) error {
-	if currentLogger != nil {
+	if currentLogger == nil {
 		return nil
 	}
 	return currentLogger.SetSeverity(s)

@@ -112,9 +112,11 @@ func (c *ProxyController) getLogSeverity(w http.ResponseWriter, r *http.Request,
 }
 
 func (c *ProxyController) updateLogSeverity(w http.ResponseWriter, r *http.Request, params map[string]string) (interface{}, error) {
-	// s, err := log.SeverityFromString()
 	s := r.Form.Get("severity")
-	log.SetSeverity(s)
+	err := log.SetSeverity(s)
+	if err != nil {
+		return nil, formatError(err)
+	}
 	return scroll.Response{"message": fmt.Sprintf("Severity has been updated to %v", s)}, nil
 }
 
