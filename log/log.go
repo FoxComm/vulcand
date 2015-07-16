@@ -1,6 +1,8 @@
 package log
 
 import (
+	"fmt"
+
 	mailgunLog "github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
 )
@@ -68,7 +70,7 @@ func GetSeverity() string {
 
 func SetSeverity(s string) error {
 	if currentLogger == nil {
-		return nil
+		return fmt.Errorf("Logger is not set")
 	}
 	return currentLogger.SetSeverity(s)
 }
