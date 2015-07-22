@@ -149,7 +149,7 @@ func (m *TomlNg) watchConfigFiles() (err error) {
 			select {
 			case event := <-m.tomlWatcher.Events:
 				if event.Op&opsWatched > 0 && path.Ext(event.Name) == ".toml" {
-					log.Infof("[Toml] event %v of file %s fired, reload config", event.Op, event.Name)
+					log.Infof("[Toml] Watch event %v of file %s fired, reload config", event.Op, event.Name)
 					err = m.reloadConfig()
 					if err != nil {
 						log.Errorf("Error while decoding new config file: %s, %s", event.Name, err.Error())
@@ -199,7 +199,7 @@ func (m *TomlNg) loadConfig(config *EngineTomlConfig) error {
 // 2. decode new values into new tomlConfig structure and replace old one.
 // 3. Add new entities to state and delete obosoletes using info from steps 1,2
 func (m *TomlNg) reloadConfig() error {
-	log.Infof("reload config")
+	log.Infof("[Toml] reload config")
 	m.tomlSyncerLock.Lock()
 	defer m.tomlSyncerLock.Unlock()
 	// Memoize current config

@@ -36,7 +36,7 @@ func (s *TomlSuite) SetUpTest(c *C) {
 	var err error
 	s.confDir, err = ioutil.TempDir(os.TempDir(), "fc_tomltest")
 	c.Assert(err, IsNil)
-	fmt.Printf("Config dir %s created %+v\n", s.confDir, err)
+	log.Infof("Config dir %s created %+v\n", s.confDir, err)
 
 	engine, err := New(registry.GetRegistry(),
 		Options{
@@ -64,8 +64,7 @@ func (s *TomlSuite) SetUpTest(c *C) {
 func (s *TomlSuite) TearDownTest(c *C) {
 	close(s.stopC)
 	s.suite.Engine.Close()
-	// err := os.RemoveAll(s.confDir)
-	// c.Assert(err, IsNil)
+	os.RemoveAll(s.confDir)
 }
 
 func (s *TomlSuite) newConfigFile(name string) (*os.File, error) {
@@ -130,8 +129,7 @@ func (s *TomlSuite) TestMiddlewareBadType(c *C) {
 	s.suite.MiddlewareBadType(c)
 }
 
-func (s *TomlSuite) TestNewAndModifyFile(c *C) {
-	log.Infof("f started")
+func (s *TomlSuite) TestCreateModifyDeleteFile(c *C) {
 	f, err := s.newConfigFile("server")
 	defer f.Close()
 	log.Infof("config file: %s", f.Name())
@@ -155,6 +153,7 @@ func (s *TomlSuite) TestNewAndModifyFile(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(len(servers), Equals, 1)
 
+	// modify file
 	f.WriteString(`
 	   [[Servers.origin_frontend]]
 	   URL = "http://localhost:8085"
@@ -166,6 +165,7 @@ func (s *TomlSuite) TestNewAndModifyFile(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(len(servers), Equals, 2)
 
+	// delete file
 	f.Close()
 	os.Remove(f.Name())
 
@@ -175,6 +175,12 @@ func (s *TomlSuite) TestNewAndModifyFile(c *C) {
 	servers, err = s.suite.Engine.GetServers(bk)
 	c.Assert(err, IsNil)
 	c.Assert(len(servers), Equals, 0)
+}
+
+func (s *TomlSuite) TestDeleteConfDir(c *C) {
+	log.Infof("delete conf dir: %s", s.confDir)
+	os.RemoveAll(s.confDir)
+	time.Sleep(500 * time.Microsecond)
 }
 
 func waitChannel(ch chan interface{}, d time.Duration) error {
