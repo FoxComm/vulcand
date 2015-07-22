@@ -129,7 +129,7 @@ func (s *TomlSuite) TestMiddlewareBadType(c *C) {
 	s.suite.MiddlewareBadType(c)
 }
 
-func (s *TomlSuite) TestCreateModifyDeleteFile(c *C) {
+func (s *TomlSuite) TestCRUD(c *C) {
 	f, err := s.newConfigFile("server")
 	defer f.Close()
 	log.Infof("config file: %s", f.Name())
@@ -140,7 +140,6 @@ func (s *TomlSuite) TestCreateModifyDeleteFile(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(len(servers), Equals, 0)
 
-	time.Sleep(100 * time.Millisecond)
 	f.WriteString(`[Servers]
     [[Servers.origin_frontend]]
     URL = "http://localhost:8080"
@@ -152,13 +151,29 @@ func (s *TomlSuite) TestCreateModifyDeleteFile(c *C) {
 	servers, err = s.suite.Engine.GetServers(bk)
 	c.Assert(err, IsNil)
 	c.Assert(len(servers), Equals, 1)
+	c.Assert(servers[0].URL, Equals, "http://localhost:8080")
 
-	// modify file
+	// Modify entry of file
+	f.Seek(0, os.SEEK_SET)
+	f.WriteString(`[Servers]
+    [[Servers.origin_frontend]]
+    URL = "http://localhost:8083"
+    `)
+	f.Sync()
+	c.Assert(waitChannel(s.suite.ChangesC, 100*time.Millisecond), IsNil)
+
+	servers, err = s.suite.Engine.GetServers(bk)
+	c.Assert(err, IsNil)
+	c.Assert(len(servers), Equals, 1)
+	c.Assert(servers[0].URL, Equals, "http://localhost:8083")
+
+	// Add entry to file
 	f.WriteString(`
 	   [[Servers.origin_frontend]]
 	   URL = "http://localhost:8085"
 	   `)
 	f.Sync()
+	c.Assert(waitChannel(s.suite.ChangesC, 100*time.Millisecond), IsNil)
 	c.Assert(waitChannel(s.suite.ChangesC, 100*time.Millisecond), IsNil)
 
 	servers, err = s.suite.Engine.GetServers(bk)
@@ -180,7 +195,6 @@ func (s *TomlSuite) TestCreateModifyDeleteFile(c *C) {
 func (s *TomlSuite) TestDeleteConfDir(c *C) {
 	log.Infof("delete conf dir: %s", s.confDir)
 	os.RemoveAll(s.confDir)
-	time.Sleep(500 * time.Microsecond)
 }
 
 func waitChannel(ch chan interface{}, d time.Duration) error {
