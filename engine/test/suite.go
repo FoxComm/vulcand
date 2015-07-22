@@ -10,7 +10,9 @@ import (
 	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 )
 
-func TestEtcd(t *testing.T) { TestingT(t) }
+func TestEtcd(t *testing.T) {
+	TestingT(t)
+}
 
 type EngineSuite struct {
 	Engine   engine.Engine
