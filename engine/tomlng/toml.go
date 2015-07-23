@@ -3,6 +3,7 @@ package tomlng
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"path"
 	"path/filepath"
@@ -43,7 +44,9 @@ type TomlNg struct {
 	tomlMeta       toml.MetaData
 	tomlSyncerLock sync.Mutex
 
-	tomlWatcher *fsnotify.Watcher
+	tomlWatcher      *fsnotify.Watcher
+	tomlWatcherDone  chan bool
+	tomlWatchedPaths []string
 }
 
 type Options struct {
@@ -65,6 +68,7 @@ func New(r *plugin.Registry, options Options) (engine.Engine, error) {
 		Registry:         r,
 		ChangesC:         make(chan interface{}, 1000),
 		ErrorsC:          make(chan error),
+		tomlWatcherDone:  make(chan bool),
 		options:          options,
 	}
 	if options.WatchConfigChanges {
@@ -90,11 +94,13 @@ func (m *TomlNg) emit(val interface{}) {
 
 func (m *TomlNg) Close() {
 	if m.options.WatchConfigChanges {
+		m.tomlWatcherDone <- true
 		m.tomlWatcher.Close()
 	}
 }
 
 func (m *TomlNg) AddConfigPath(in string) error {
+	log.Infof("[Toml] Add cfg path %s", in)
 	if in == "" {
 		return nil
 	}
@@ -107,18 +113,27 @@ func (m *TomlNg) AddConfigPath(in string) error {
 	if err != nil {
 		return err
 	}
+
 	if !configPathExists {
 		return fmt.Errorf("Config path: %s not exists", absin)
 	}
 
-	if !stringInSlice(absin, m.options.ConfigPaths) && configPathExists {
-		if m.options.WatchConfigChanges {
-			m.tomlWatcher.Add(absin)
-		}
+	if m.options.WatchConfigChanges && !stringInSlice(absin, m.tomlWatchedPaths) {
+		m.tomlWatchedPaths = append(m.tomlWatchedPaths, absin)
+		log.Infof("[Toml] Add dir %s to watch", absin)
+		m.tomlWatcher.Add(absin)
+	}
+
+	if !stringInSlice(absin, m.options.ConfigPaths) {
 		m.options.ConfigPaths = append(m.options.ConfigPaths, absin)
 	}
 
 	return nil
+}
+
+func (m *TomlNg) ReadConfig(r io.Reader) (err error) {
+	m.tomlMeta, err = toml.DecodeReader(r, &m.tomlConfig)
+	return
 }
 
 func (m *TomlNg) watchConfigFiles() (err error) {
@@ -128,11 +143,13 @@ func (m *TomlNg) watchConfigFiles() (err error) {
 	}
 
 	go func() {
+		log.Infof("[Toml] Watch started")
 		opsWatched := fsnotify.Create | fsnotify.Write | fsnotify.Remove
 		for {
 			select {
 			case event := <-m.tomlWatcher.Events:
 				if event.Op&opsWatched > 0 && path.Ext(event.Name) == ".toml" {
+					log.Infof("[Toml] Watch event %v of file %s fired, reload config", event.Op, event.Name)
 					err = m.reloadConfig()
 					if err != nil {
 						log.Errorf("Error while decoding new config file: %s, %s", event.Name, err.Error())
@@ -142,7 +159,10 @@ func (m *TomlNg) watchConfigFiles() (err error) {
 					continue
 				}
 			case err := <-m.tomlWatcher.Errors:
-				log.Errorf("error: %v", err)
+				log.Errorf("[Toml] Watch error: %v", err)
+			case <-m.tomlWatcherDone:
+				log.Infof("[Toml] Watch exit")
+				return
 			}
 		}
 	}()
@@ -179,6 +199,7 @@ func (m *TomlNg) loadConfig(config *EngineTomlConfig) error {
 // 2. decode new values into new tomlConfig structure and replace old one.
 // 3. Add new entities to state and delete obosoletes using info from steps 1,2
 func (m *TomlNg) reloadConfig() error {
+	log.Infof("[Toml] reload config")
 	m.tomlSyncerLock.Lock()
 	defer m.tomlSyncerLock.Unlock()
 	// Memoize current config
