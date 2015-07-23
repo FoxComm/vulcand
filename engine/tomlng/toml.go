@@ -3,7 +3,7 @@ package tomlng
 
 import (
 	"fmt"
-	"io"
+	"net/http"
 	"path"
 	"path/filepath"
 	"strings"
@@ -16,6 +16,7 @@ import (
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/BurntSushi/toml"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/fsnotify.v1"
 
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
 	"github.com/FoxComm/vulcand/log"
 
 	// "io/ioutil"
@@ -76,9 +77,7 @@ func New(r *plugin.Registry, options Options) (engine.Engine, error) {
 		}
 	}
 
-	err := ng.syncConfig(func(newConfig *EngineTomlConfig) error {
-		return ng.loadConfig(&ng.tomlConfig)
-	})
+	err := ng.reloadConfig()
 	return ng, err
 }
 
@@ -134,9 +133,7 @@ func (m *TomlNg) watchConfigFiles() (err error) {
 			select {
 			case event := <-m.tomlWatcher.Events:
 				if event.Op&opsWatched > 0 && path.Ext(event.Name) == ".toml" {
-					err = m.syncConfig(func(newConfig *EngineTomlConfig) error {
-						return m.loadConfig(newConfig)
-					})
+					err = m.reloadConfig()
 					if err != nil {
 						log.Errorf("Error while decoding new config file: %s, %s", event.Name, err.Error())
 						continue
@@ -166,6 +163,7 @@ func (m *TomlNg) loadConfig(config *EngineTomlConfig) error {
 			return err
 		}
 		for _, cfg := range configFiles {
+			log.Infof("Load toml config from %s", cfg)
 			_, err = toml.DecodeFile(cfg, config)
 			if err != nil {
 				return err
@@ -176,16 +174,11 @@ func (m *TomlNg) loadConfig(config *EngineTomlConfig) error {
 	return nil
 }
 
-func (m *TomlNg) ReadConfig(r io.Reader) (err error) {
-	m.tomlMeta, err = toml.DecodeReader(r, &m.tomlConfig)
-	return
-}
-
-// syncConfig do 3 steps
+//  reloadConfig do 3 steps
 // 1. First memoize current config
-// 2. decode new values into current and new tomlConfig structures
+// 2. decode new values into new tomlConfig structure and replace old one.
 // 3. Add new entities to state and delete obosoletes using info from steps 1,2
-func (m *TomlNg) syncConfig(decodePhaseFunc func(newConfig *EngineTomlConfig) error) error {
+func (m *TomlNg) reloadConfig() error {
 	m.tomlSyncerLock.Lock()
 	defer m.tomlSyncerLock.Unlock()
 	// Memoize current config
@@ -209,9 +202,11 @@ func (m *TomlNg) syncConfig(decodePhaseFunc func(newConfig *EngineTomlConfig) er
 		}
 	}
 
-	// decode new values
+	// decode config into new structure
+	// we can't use there m.tomlConfig
+	// because loadConfig persist old values
 	var newConfig EngineTomlConfig
-	if err := decodePhaseFunc(&newConfig); err != nil {
+	if err := m.loadConfig(&newConfig); err != nil {
 		return err
 	}
 	m.tomlConfig = newConfig
@@ -704,6 +699,23 @@ func (m *TomlNg) Subscribe(changes chan interface{}, cancelC chan bool) error {
 			return err
 		}
 	}
+}
+
+func (m *TomlNg) AddApiHandlers(app *scroll.App) {
+
+	app.AddHandler(scroll.Spec{
+		Paths:   []string{"/v2/engine/reloadconfig"},
+		Methods: []string{"POST"},
+		Handler: m.apiReloadConfig,
+	})
+}
+
+func (m *TomlNg) apiReloadConfig(w http.ResponseWriter, r *http.Request, params map[string]string) (interface{}, error) {
+	err := m.reloadConfig()
+	if err != nil {
+		return nil, err
+	}
+	return "ok", err
 }
 
 func serverKey(backendId string, server engine.Server) string {

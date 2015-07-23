@@ -93,6 +93,11 @@ func InitProxyController(ng engine.Engine, stats engine.StatsProvider, app *scro
 			Methods: []string{"DELETE"},
 			Handler: c.deleteMiddleware,
 		})
+
+	// Engine additional handlers
+	if cast, ok := c.ng.(engine.EngineApiHandlers); ok {
+		cast.AddApiHandlers(app)
+	}
 }
 
 func (c *ProxyController) handleError(w http.ResponseWriter, r *http.Request) {
