@@ -1,52 +1,59 @@
 package tomlng
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
+	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/engine/test"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/plugin/registry"
 
 	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 )
 
-func TestMem(t *testing.T) { TestingT(t) }
-
-type MemSuite struct {
-	suite test.EngineSuite
-	stopC chan bool
+func TestToml(t *testing.T) {
+	TestingT(t)
 }
 
-var _ = Suite(&MemSuite{})
+var _ = Suite(&TomlSuite{})
 
-func (s *MemSuite) SetUpSuite(c *C) {
-	log.Init([]*log.LogConfig{&log.LogConfig{Name: "console"}})
+type TomlSuite struct {
+	suite   test.EngineSuite
+	confDir string
+	stopC   chan bool
 }
 
-var tomlBlob = `
-[listeners]
-  [listeners.default]
-    protocol = "http"
-  [listeners.default.address]
-    network = "tcp"
-    address = "0.0.0.0:18080"
+func (s *TomlSuite) SetUpSuite(c *C) {
+	log.EnsureLoggerExist("console", "INFO")
+}
 
-`
+func (s *TomlSuite) SetUpTest(c *C) {
+	var err error
+	s.confDir, err = ioutil.TempDir(os.TempDir(), "fc_tomltest")
+	c.Assert(err, IsNil)
+	log.Infof("Config dir %s created %+v\n", s.confDir, err)
 
-func (s *MemSuite) SetUpTest(c *C) {
 	engine, err := New(registry.GetRegistry(),
 		Options{
 			MainConfigFilepath: "",
-			ConfigPaths:        []string{},
-			WatchConfigChanges: false,
+			ConfigPaths:        []string{s.confDir},
+			WatchConfigChanges: true,
 		})
 	if err != nil {
 		c.Fatalf("Error while creating toml engine: %s", err.Error())
 		return
 	}
 
-	engine.(*TomlNg).ReadConfig(strings.NewReader(tomlBlob))
+	tomlEngine, ok := engine.(*TomlNg)
+	c.Assert(ok, Equals, true)
+	tomlEngine.ReadConfig(strings.NewReader(test.TomlCfgDefaultListener))
+	tomlEngine.ReadConfig(strings.NewReader(test.TomlCfgOriginFrontend))
+	tomlEngine.ReadConfig(strings.NewReader(test.TomlCfgOriginBackend))
 
 	s.suite.ChangesC = make(chan interface{})
 	s.stopC = make(chan bool)
@@ -54,63 +61,147 @@ func (s *MemSuite) SetUpTest(c *C) {
 	s.suite.Engine = engine
 }
 
-func (s *MemSuite) TearDownTest(c *C) {
+func (s *TomlSuite) TearDownTest(c *C) {
 	close(s.stopC)
 	s.suite.Engine.Close()
+	os.RemoveAll(s.confDir)
 }
 
-func (s *MemSuite) TestHostCRUD(c *C) {
+func (s *TomlSuite) newConfigFile(name string) (*os.File, error) {
+	path := strings.Join([]string{s.confDir, name + ".toml"}, string(os.PathSeparator))
+	return os.Create(path)
+
+}
+
+func (s *TomlSuite) TestHostCRUD(c *C) {
 	s.suite.HostCRUD(c)
 }
 
-func (s *MemSuite) TestHostWithKeyPair(c *C) {
+func (s *TomlSuite) TestHostWithKeyPair(c *C) {
 	s.suite.HostWithKeyPair(c)
 }
 
-func (s *MemSuite) TestHostUpsertKeyPair(c *C) {
+func (s *TomlSuite) TestHostUpsertKeyPair(c *C) {
 	s.suite.HostUpsertKeyPair(c)
 }
 
-func (s *MemSuite) TestHostWithOCSP(c *C) {
+func (s *TomlSuite) TestHostWithOCSP(c *C) {
 	s.suite.HostWithOCSP(c)
 }
 
-func (s *MemSuite) TestListenerCRUD(c *C) {
+func (s *TomlSuite) TestListenerCRUD(c *C) {
 	s.suite.ListenerCRUD(c)
 }
 
-func (s *MemSuite) TestListenerSettingsCRUD(c *C) {
+func (s *TomlSuite) TestListenerSettingsCRUD(c *C) {
 	s.suite.ListenerSettingsCRUD(c)
 }
 
-func (s *MemSuite) TestBackendCRUD(c *C) {
+func (s *TomlSuite) TestBackendCRUD(c *C) {
 	s.suite.BackendCRUD(c)
 }
 
-func (s *MemSuite) TestBackendDeleteUsed(c *C) {
+func (s *TomlSuite) TestBackendDeleteUsed(c *C) {
 	s.suite.BackendDeleteUsed(c)
 }
 
-func (s *MemSuite) TestServerCRUD(c *C) {
+func (s *TomlSuite) TestServerCRUD(c *C) {
 	s.suite.ServerCRUD(c)
 }
 
-func (s *MemSuite) TestFrontendCRUD(c *C) {
+func (s *TomlSuite) TestFrontendCRUD(c *C) {
 	s.suite.FrontendCRUD(c)
 }
 
-func (s *MemSuite) TestFrontendBadBackend(c *C) {
+func (s *TomlSuite) TestFrontendBadBackend(c *C) {
 	s.suite.FrontendBadBackend(c)
 }
 
-func (s *MemSuite) TestMiddlewareCRUD(c *C) {
+func (s *TomlSuite) TestMiddlewareCRUD(c *C) {
 	s.suite.MiddlewareCRUD(c)
 }
 
-func (s *MemSuite) TestMiddlewareBadFrontend(c *C) {
+func (s *TomlSuite) TestMiddlewareBadFrontend(c *C) {
 	s.suite.MiddlewareBadFrontend(c)
 }
 
-func (s *MemSuite) TestMiddlewareBadType(c *C) {
+func (s *TomlSuite) TestMiddlewareBadType(c *C) {
 	s.suite.MiddlewareBadType(c)
+}
+
+func (s *TomlSuite) TestCRUD(c *C) {
+	f, err := s.newConfigFile("server")
+	defer f.Close()
+	log.Infof("config file: %s", f.Name())
+	c.Assert(err, IsNil)
+	bk := engine.BackendKey{Id: "origin_frontend"}
+
+	servers, err := s.suite.Engine.GetServers(bk)
+	c.Assert(err, IsNil)
+	c.Assert(len(servers), Equals, 0)
+
+	f.WriteString(`[Servers]
+    [[Servers.origin_frontend]]
+    URL = "http://localhost:8080"
+    `)
+	f.Sync()
+	// wait for reload event
+	c.Assert(waitChannel(s.suite.ChangesC, 100*time.Millisecond), IsNil)
+
+	servers, err = s.suite.Engine.GetServers(bk)
+	c.Assert(err, IsNil)
+	c.Assert(len(servers), Equals, 1)
+	c.Assert(servers[0].URL, Equals, "http://localhost:8080")
+
+	// Modify entry of file
+	f.Seek(0, os.SEEK_SET)
+	f.WriteString(`[Servers]
+    [[Servers.origin_frontend]]
+    URL = "http://localhost:8083"
+    `)
+	f.Sync()
+	c.Assert(waitChannel(s.suite.ChangesC, 100*time.Millisecond), IsNil)
+
+	servers, err = s.suite.Engine.GetServers(bk)
+	c.Assert(err, IsNil)
+	c.Assert(len(servers), Equals, 1)
+	c.Assert(servers[0].URL, Equals, "http://localhost:8083")
+
+	// Add entry to file
+	f.WriteString(`
+	   [[Servers.origin_frontend]]
+	   URL = "http://localhost:8085"
+	   `)
+	f.Sync()
+	c.Assert(waitChannel(s.suite.ChangesC, 100*time.Millisecond), IsNil)
+	c.Assert(waitChannel(s.suite.ChangesC, 100*time.Millisecond), IsNil)
+
+	servers, err = s.suite.Engine.GetServers(bk)
+	c.Assert(err, IsNil)
+	c.Assert(len(servers), Equals, 2)
+
+	// delete file
+	f.Close()
+	os.Remove(f.Name())
+
+	c.Assert(waitChannel(s.suite.ChangesC, 100*time.Millisecond), IsNil)
+	c.Assert(waitChannel(s.suite.ChangesC, 100*time.Millisecond), IsNil)
+
+	servers, err = s.suite.Engine.GetServers(bk)
+	c.Assert(err, IsNil)
+	c.Assert(len(servers), Equals, 0)
+}
+
+func (s *TomlSuite) TestDeleteConfDir(c *C) {
+	log.Infof("delete conf dir: %s", s.confDir)
+	os.RemoveAll(s.confDir)
+}
+
+func waitChannel(ch chan interface{}, d time.Duration) error {
+	select {
+	case <-ch:
+		return nil
+	case <-time.After(d):
+		return fmt.Errorf("Timeout on channel: %+v", ch)
+	}
 }
