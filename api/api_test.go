@@ -5,11 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 	oxytest "github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/engine/memng"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/plugin/connlimit"
 	"github.com/FoxComm/vulcand/plugin/registry"
 	"github.com/FoxComm/vulcand/proxy"
@@ -31,7 +31,8 @@ type ApiSuite struct {
 var _ = Suite(&ApiSuite{})
 
 func (s *ApiSuite) SetUpSuite(c *C) {
-	log.Init([]*log.LogConfig{&log.LogConfig{Name: "console"}})
+	err := log.EnsureLoggerExist("console", "error")
+	c.Assert(err, IsNil)
 }
 
 func (s *ApiSuite) SetUpTest(c *C) {
@@ -65,7 +66,7 @@ func (s *ApiSuite) TestStatusV1(c *C) {
 }
 
 func (s *ApiSuite) TestSeverity(c *C) {
-	for _, sev := range []log.Severity{log.SeverityInfo, log.SeverityWarn, log.SeverityError} {
+	for _, sev := range []string{"INFO", "WARN", "ERROR"} {
 		err := s.client.UpdateLogSeverity(sev)
 		c.Assert(err, IsNil)
 		out, err := s.client.GetLogSeverity()
@@ -75,7 +76,7 @@ func (s *ApiSuite) TestSeverity(c *C) {
 }
 
 func (s *ApiSuite) TestInvalidSeverity(c *C) {
-	err := s.client.UpdateLogSeverity(-1)
+	err := s.client.UpdateLogSeverity("noexistlogseverity=-")
 	c.Assert(err, NotNil)
 }
 

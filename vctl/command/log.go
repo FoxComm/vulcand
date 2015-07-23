@@ -2,7 +2,6 @@ package command
 
 import (
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 )
 
 func NewLogCommand(cmd *Command) cli.Command {
@@ -27,11 +26,7 @@ func NewLogCommand(cmd *Command) cli.Command {
 }
 
 func (cmd *Command) updateLogSeverityAction(c *cli.Context) {
-	sev, err := log.SeverityFromString(c.String("severity"))
-	if err != nil {
-		cmd.printError(err)
-		return
-	}
+	sev := c.String("severity")
 	if err := cmd.client.UpdateLogSeverity(sev); err != nil {
 		cmd.printError(err)
 		return
@@ -45,5 +40,5 @@ func (cmd *Command) getLogSeverityAction(c *cli.Context) {
 		cmd.printError(err)
 		return
 	}
-	cmd.printOk("severity: %v", sev)
+	cmd.printOk("severity: %s", sev)
 }

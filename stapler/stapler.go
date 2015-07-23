@@ -21,7 +21,7 @@ import (
 
 	"github.com/FoxComm/vulcand/engine"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
 )
 

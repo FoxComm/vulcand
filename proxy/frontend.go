@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"sort"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/forward"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/roundrobin"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/stream"

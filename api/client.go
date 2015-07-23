@@ -13,8 +13,6 @@ import (
 
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/plugin"
-
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 )
 
 const CurrentVersion = "v2"
@@ -41,20 +39,20 @@ func (c *Client) GetHosts() ([]engine.Host, error) {
 	return engine.HostsFromJSON(data)
 }
 
-func (c *Client) UpdateLogSeverity(s log.Severity) error {
-	return c.PutForm(c.endpoint("log", "severity"), url.Values{"severity": {s.String()}})
+func (c *Client) UpdateLogSeverity(s string) error {
+	return c.PutForm(c.endpoint("log", "severity"), url.Values{"severity": {s}})
 }
 
-func (c *Client) GetLogSeverity() (log.Severity, error) {
+func (c *Client) GetLogSeverity() (string, error) {
 	data, err := c.Get(c.endpoint("log", "severity"), url.Values{})
 	if err != nil {
-		return -1, err
+		return "", err
 	}
 	var sev *SeverityResponse
 	if err := json.Unmarshal(data, &sev); err != nil {
-		return -1, err
+		return "", err
 	}
-	return log.SeverityFromString(sev.Severity)
+	return sev.Severity, nil
 }
 
 func (c *Client) GetHost(hk engine.HostKey) (*engine.Host, error) {

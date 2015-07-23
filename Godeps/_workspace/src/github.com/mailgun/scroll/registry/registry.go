@@ -3,7 +3,7 @@ package registry
 import (
 	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll/vulcan/middleware"
 )
 
