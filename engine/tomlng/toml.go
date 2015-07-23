@@ -3,6 +3,7 @@ package tomlng
 
 import (
 	"fmt"
+	"net/http"
 	"path"
 	"path/filepath"
 	"strings"
@@ -15,6 +16,7 @@ import (
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/BurntSushi/toml"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/fsnotify.v1"
 
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
 	"github.com/FoxComm/vulcand/log"
 
 	// "io/ioutil"
@@ -697,6 +699,23 @@ func (m *TomlNg) Subscribe(changes chan interface{}, cancelC chan bool) error {
 			return err
 		}
 	}
+}
+
+func (m *TomlNg) AddApiHandlers(app *scroll.App) {
+
+	app.AddHandler(scroll.Spec{
+		Paths:   []string{"/v2/engine/reloadconfig"},
+		Methods: []string{"POST"},
+		Handler: m.apiReloadConfig,
+	})
+}
+
+func (m *TomlNg) apiReloadConfig(w http.ResponseWriter, r *http.Request, params map[string]string) (interface{}, error) {
+	err := m.reloadConfig()
+	if err != nil {
+		return nil, err
+	}
+	return "ok", err
 }
 
 func serverKey(backendId string, server engine.Server) string {
