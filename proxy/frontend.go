@@ -135,6 +135,10 @@ func (f *frontend) rebuild() error {
 		rbErrorHandler = f.mux.options.NoServersErrorHandler
 	}
 
+	if settings.NoServersHandler.StatusCode > 0 {
+		rbErrorHandler = &settings.NoServersHandler
+	}
+
 	rb, err := roundrobin.NewRebalancer(rr,
 		roundrobin.RebalancerLogger(f.log),
 		roundrobin.RebalancerErrorHandler(rbErrorHandler),
