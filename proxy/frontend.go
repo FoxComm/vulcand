@@ -6,12 +6,12 @@ import (
 	"net/url"
 	"sort"
 
-	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/forward"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/roundrobin"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/stream"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
 	"github.com/FoxComm/vulcand/engine"
+	"github.com/FoxComm/vulcand/log"
 )
 
 type frontend struct {
@@ -130,7 +130,15 @@ func (f *frontend) rebuild() error {
 	}
 
 	// Rebalancer will readjust load balancer weights based on error ratios
-	rb, err := roundrobin.NewRebalancer(rr, roundrobin.RebalancerLogger(f.log))
+	rbErrorHandler := utils.DefaultHandler
+	if f.mux.options.NoServersErrorHandler != nil {
+		rbErrorHandler = f.mux.options.NoServersErrorHandler
+	}
+
+	rb, err := roundrobin.NewRebalancer(rr,
+		roundrobin.RebalancerLogger(f.log),
+		roundrobin.RebalancerErrorHandler(rbErrorHandler),
+	)
 	if err != nil {
 		return err
 	}
