@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
 )
 
 // Middleware specification, used to construct new middlewares and plug them into CLI API and backends
@@ -75,8 +76,9 @@ type SpecGetter func(string) *MiddlewareSpec
 
 // Registry contains currently registered middlewares and used to support pluggable middlewares across all modules of the vulcand
 type Registry struct {
-	specs    []*MiddlewareSpec
-	notFound Middleware
+	specs     []*MiddlewareSpec
+	notFound  Middleware
+	noServers utils.ErrorHandler
 }
 
 func NewRegistry() *Registry {
@@ -119,6 +121,14 @@ func (r *Registry) AddNotFoundMiddleware(notFound Middleware) error {
 
 func (r *Registry) GetNotFoundMiddleware() Middleware {
 	return r.notFound
+}
+
+func (r *Registry) GetNoServersErrorHandler() utils.ErrorHandler {
+	return r.noServers
+}
+
+func (r *Registry) SetNoServersErrorHandler(handler utils.ErrorHandler) {
+	r.noServers = handler
 }
 
 func verifySignature(fn interface{}) error {

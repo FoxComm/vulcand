@@ -223,6 +223,21 @@ type HTTPFrontendLimits struct {
 	MaxBodyBytes    int64 // Maximum size of a request body in bytes
 }
 
+type NoServersHandler struct {
+	StatusCode  int
+	ContentType string
+	Body        string
+}
+
+func (e *NoServersHandler) ServeHTTP(w http.ResponseWriter, req *http.Request, err error) {
+	if e.ContentType != "" {
+		w.Header().Set("Content-Type", e.ContentType)
+	}
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(e.Body)))
+	w.WriteHeader(e.StatusCode)
+	w.Write([]byte(e.Body))
+}
+
 // Additional options to control this location, such as timeouts
 type HTTPFrontendSettings struct {
 	// Limits contains various limits one can supply for a location.
@@ -233,6 +248,8 @@ type HTTPFrontendSettings struct {
 	Hostname string
 	// In this case appends new forward info to the existing header
 	TrustForwardHeader bool
+	// Used when no servers are available
+	NoServersHandler NoServersHandler
 }
 
 func NewAddress(network, address string) (*Address, error) {
