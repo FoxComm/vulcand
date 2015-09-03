@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/FoxComm/vulcand",
-	"GoVersion": "go1.4.2",
+	"GoVersion": "go1.5",
 	"Packages": [
 		"./..."
 	],
@@ -24,6 +24,11 @@
 			"Rev": "f9982619ccace7df963bb7f6d1de3a6f014ff709"
 		},
 		{
+			"ImportPath": "github.com/coreos/go-etcd/etcd",
+			"Comment": "v2.0.0-22-g9847b93",
+			"Rev": "9847b93751a5fbaf227b893d172cee0104ac6427"
+		},
+		{
 			"ImportPath": "github.com/gorilla/context",
 			"Rev": "215affda49addc4c8ef7e2534915df2c8c35c6cd"
 		},
@@ -32,17 +37,12 @@
 			"Rev": "e444e69cbd2e2e3e0749a2f3c717cec491552bbf"
 		},
 		{
-			"ImportPath": "github.com/mailgun/go-etcd/etcd",
-			"Comment": "v0.2.0-rc1-124-g248e96a",
-			"Rev": "248e96a4ad7adfa23b531eb2d8e80d9050c33d24"
-		},
-		{
 			"ImportPath": "github.com/mailgun/iptools",
 			"Rev": "fac48f4f8a866e6fd74ecd4cc74f01fe36e6ef9c"
 		},
 		{
 			"ImportPath": "github.com/mailgun/log",
-			"Rev": "b65e83b83bfde331a05016a6bb8055cc96695c30"
+			"Rev": "44874009257d4d47ba9806f1b7f72a32a015e4d8"
 		},
 		{
 			"ImportPath": "github.com/mailgun/manners",
@@ -63,43 +63,43 @@
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/cbreaker",
-			"Rev": "563343dd5c1f1997846c85e353fbf81708982ab5"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/connlimit",
-			"Rev": "563343dd5c1f1997846c85e353fbf81708982ab5"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/forward",
-			"Rev": "563343dd5c1f1997846c85e353fbf81708982ab5"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/memmetrics",
-			"Rev": "563343dd5c1f1997846c85e353fbf81708982ab5"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/ratelimit",
-			"Rev": "563343dd5c1f1997846c85e353fbf81708982ab5"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/roundrobin",
-			"Rev": "563343dd5c1f1997846c85e353fbf81708982ab5"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/stream",
-			"Rev": "563343dd5c1f1997846c85e353fbf81708982ab5"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/testutils",
-			"Rev": "563343dd5c1f1997846c85e353fbf81708982ab5"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/trace",
-			"Rev": "563343dd5c1f1997846c85e353fbf81708982ab5"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/utils",
-			"Rev": "563343dd5c1f1997846c85e353fbf81708982ab5"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/predicate",
@@ -111,7 +111,7 @@
 		},
 		{
 			"ImportPath": "github.com/mailgun/scroll",
-			"Rev": "c33949cbf905969d74b2fbb22a1490319cea2d14"
+			"Rev": "77b0214e471c031b73fac913b7dda81b21ed4bd3"
 		},
 		{
 			"ImportPath": "github.com/mailgun/timetools",
@@ -120,6 +120,10 @@
 		{
 			"ImportPath": "github.com/mailgun/ttlmap",
 			"Rev": "51994f8e1aad271eb214e725379dde8bd4c90acf"
+		},
+		{
+			"ImportPath": "github.com/ugorji/go/codec",
+			"Rev": "5abd4e96a45c386928ed2ca2a7ef63e2533e18ec"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/nacl/secretbox",

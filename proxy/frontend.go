@@ -33,7 +33,7 @@ func newFrontend(m *mux, f engine.Frontend, b *backend) (*frontend, error) {
 		mux:         m,
 		backend:     b,
 		middlewares: make(map[engine.MiddlewareKey]engine.Middleware),
-		log:         log.GetLogger(),
+		log:         log.GetGlobalLogger(),
 	}
 
 	if err := fr.rebuild(); err != nil {
@@ -115,7 +115,8 @@ func (f *frontend) rebuild() error {
 			&forward.HeaderRewriter{
 				Hostname:           settings.Hostname,
 				TrustForwardHeader: settings.TrustForwardHeader,
-			}))
+			}),
+		forward.PassHostHeader(settings.PassHostHeader))
 
 	// rtwatcher will be observing and aggregating metrics
 	watcher, err := NewWatcher(fwd)

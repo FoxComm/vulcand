@@ -250,6 +250,8 @@ type HTTPFrontendSettings struct {
 	TrustForwardHeader bool
 	// Used when no servers are available
 	NoServersHandler NoServersHandler
+	// Should host header be forwarded as-is?
+	PassHostHeader bool
 }
 
 func NewAddress(network, address string) (*Address, error) {
@@ -298,11 +300,11 @@ func NewHTTPFrontend(id, backendId string, routeExpr string, settings HTTPFronte
 
 	// Make sure location path is a valid route expression
 	if !route.IsValid(routeExpr) {
-		return nil, fmt.Errorf("route should be a valid route expression")
+		return nil, fmt.Errorf("route should be a valid route expression: %s", routeExpr)
 	}
 
 	if settings.FailoverPredicate != "" && !stream.IsValidExpression(settings.FailoverPredicate) {
-		return nil, fmt.Errorf("invalid failover predicate")
+		return nil, fmt.Errorf("invalid failover predicate: %s", settings.FailoverPredicate)
 	}
 
 	return &Frontend{

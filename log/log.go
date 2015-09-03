@@ -17,12 +17,14 @@ type Logger interface {
 	Fatalf(format string, args ...interface{})
 }
 
+type Severity string
+
 type DefaultLogger struct {
 }
 
 var currentLogger Logger
 
-func GetLogger() utils.Logger {
+func GetGlobalLogger() utils.Logger {
 	return currentLogger
 }
 

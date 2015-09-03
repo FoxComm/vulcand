@@ -40,7 +40,7 @@ type Options struct {
 	TomlOptions
 
 	Log         string
-	LogSeverity severity
+	LogSeverity SeverityFlag
 
 	ServerReadTimeout    time.Duration
 	ServerWriteTimeout   time.Duration
@@ -55,26 +55,26 @@ type Options struct {
 	StatsdPrefix string
 }
 
-type severity struct {
-	s log.Severity
+type SeverityFlag struct {
+	S log.Severity
 }
 
-func (s *severity) Get() interface{} {
-	return s.s.Get()
+func (s *SeverityFlag) Get() interface{} {
+	return &s.S
 }
 
 // Set is part of the flag.Value interface.
-func (s *severity) Set(value string) error {
+func (s *SeverityFlag) Set(value string) error {
 	out, err := log.SeverityFromString(value)
 	if err != nil {
 		return err
 	}
-	s.s = out
+	s.S = out
 	return nil
 }
 
-func (s *severity) String() string {
-	return s.s.String()
+func (s *SeverityFlag) String() string {
+	return s.S.String()
 }
 
 // Helper to parse options that can occur several times, e.g. cassandra nodes
@@ -134,7 +134,7 @@ func ParseCommandLine() (options Options, err error) {
 	flag.StringVar(&options.CertPath, "certPath", "", "KeyPair to use (enables TLS)")
 	flag.StringVar(&options.Log, "log", "console", "Logging to use (syslog or console)")
 
-	options.LogSeverity.s = log.SeverityWarn
+	options.LogSeverity.S = log.SeverityWarning
 	flag.Var(&options.LogSeverity, "logSeverity", "logs at or above this level to the logging output")
 
 	flag.IntVar(&options.ServerMaxHeaderBytes, "serverMaxHeaderBytes", 1<<20, "Maximum size of request headers")
