@@ -3,7 +3,6 @@ package engine
 import (
 	"time"
 
-	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/plugin"
 )
 
@@ -87,9 +86,9 @@ type Engine interface {
 	GetRegistry() *plugin.Registry
 
 	// GetLogSeverity returns the current logging severity level
-	GetLogSeverity() log.Severity
+	GetLogSeverity() string
 	// SetLogSeverity updates the logging severity level
-	SetLogSeverity(log.Severity) error
+	SetLogSeverity(string) error
 
 	// Close should close all underlying resources such as connections, files, etc.
 	Close()

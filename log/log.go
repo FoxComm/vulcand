@@ -7,6 +7,13 @@ import (
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
 )
 
+const (
+	SeverityWarning = "WARN"
+	SeverityError   = "ERROR"
+	SeverityInfo    = "INFO"
+	SeverityDebug   = "DEBUG"
+)
+
 type Logger interface {
 	SetSeverity(s string) error
 	GetSeverity() string
@@ -14,12 +21,11 @@ type Logger interface {
 	Infof(format string, args ...interface{})
 	Warningf(format string, args ...interface{})
 	Errorf(format string, args ...interface{})
-	Fatalf(format string, args ...interface{})
+	// Fatalf(format string, args ...interface{})
 }
 
-type Severity string
-
 type DefaultLogger struct {
+	logSeverity string
 }
 
 var currentLogger Logger
@@ -29,7 +35,7 @@ func GetGlobalLogger() utils.Logger {
 }
 
 func NewDefaultLogger(name, severity string) (Logger, error) {
-	err := mailgunLog.Init([]*mailgunLog.LogConfig{&mailgunLog.LogConfig{Name: name}})
+	err := mailgunLog.InitWithConfig(mailgunLog.Config{Name: name})
 	if err != nil {
 		return nil, err
 	}
@@ -57,11 +63,12 @@ func Errorf(format string, args ...interface{}) {
 		currentLogger.Errorf(format, args...)
 	}
 }
-func Fatalf(format string, args ...interface{}) {
-	if currentLogger != nil {
-		currentLogger.Fatalf(format, args...)
-	}
-}
+
+// func Fatalf(format string, args ...interface{}) {
+// 	if currentLogger != nil {
+// 		currentLogger.Fatalf(format, args...)
+// 	}
+// }
 
 func GetSeverity() string {
 	if currentLogger == nil {
@@ -89,6 +96,7 @@ func SetLogger(l Logger) {
 }
 
 func (d DefaultLogger) SetSeverity(s string) error {
+	d.logSeverity = s
 	lvl, err := mailgunLog.SeverityFromString(s)
 	if err != nil {
 		return err
@@ -98,7 +106,7 @@ func (d DefaultLogger) SetSeverity(s string) error {
 }
 
 func (d DefaultLogger) GetSeverity() string {
-	return mailgunLog.GetSeverity().String()
+	return d.logSeverity
 }
 
 func (d DefaultLogger) Infof(format string, args ...interface{}) {
@@ -110,6 +118,7 @@ func (d DefaultLogger) Warningf(format string, args ...interface{}) {
 func (d DefaultLogger) Errorf(format string, args ...interface{}) {
 	mailgunLog.Errorf(format, args...)
 }
-func (d DefaultLogger) Fatalf(format string, args ...interface{}) {
-	mailgunLog.Fatalf(format, args...)
-}
+
+// func (d DefaultLogger) Fatalf(format string, args ...interface{}) {
+// 	mailgunLog.Fatalf(format, args...)
+// }

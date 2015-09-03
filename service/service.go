@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/coreos/go-etcd/etcd"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/manners"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/metrics"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
@@ -71,7 +71,7 @@ func NewService(options Options, registry *plugin.Registry) *Service {
 }
 
 func (s *Service) Start() error {
-	if err := log.EnsureLoggerExist(s.options.Log, s.options.LogSeverity.String()); err != nil {
+	if err := log.EnsureLoggerExist(s.options.Log, s.options.LogSeverity); err != nil {
 		return err
 	}
 

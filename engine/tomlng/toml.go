@@ -39,7 +39,7 @@ type TomlNg struct {
 	ChangesC chan interface{}
 	ErrorsC  chan error
 
-	logsev log.Severity
+	logsev string
 
 	options        Options
 	tomlConfig     EngineTomlConfig
@@ -101,13 +101,13 @@ func (m *TomlNg) Close() {
 	}
 }
 
-func (n *ng) GetLogSeverity() log.Severity {
+func (n *TomlNg) GetLogSeverity() string {
 	return n.logsev
 }
 
-func (n *ng) SetLogSeverity(sev log.Severity) {
+func (n *TomlNg) SetLogSeverity(sev string) error {
 	n.logsev = sev
-	log.SetSeverity(n.logsev)
+	return log.SetSeverity(n.logsev)
 }
 
 func (m *TomlNg) AddConfigPath(in string) error {

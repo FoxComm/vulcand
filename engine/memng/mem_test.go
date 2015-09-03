@@ -3,8 +3,8 @@ package memng
 import (
 	"testing"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 	"github.com/FoxComm/vulcand/engine/test"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/plugin/registry"
 
 	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
@@ -20,7 +20,8 @@ type MemSuite struct {
 var _ = Suite(&MemSuite{})
 
 func (s *MemSuite) SetUpSuite(c *C) {
-	log.InitWithConfig(log.Config{Name: "console"})
+	err := log.EnsureLoggerExist("console", "error")
+	c.Assert(err, IsNil)
 }
 
 func (s *MemSuite) SetUpTest(c *C) {

@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/plugin/registry"
 	"github.com/FoxComm/vulcand/vctl/command"
 )
@@ -11,7 +11,7 @@ import (
 var vulcanUrl string
 
 func main() {
-	log.InitWithConfig(log.Config{Name: "console"})
+	log.EnsureLoggerExist("console", "error")
 
 	cmd := command.NewCommand(registry.GetRegistry())
 	err := cmd.Run(os.Args)

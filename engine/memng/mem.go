@@ -24,7 +24,7 @@ type Mem struct {
 	Registry    *plugin.Registry
 	ChangesC    chan interface{}
 	ErrorsC     chan error
-	LogSeverity log.Severity
+	LogSeverity string
 }
 
 func New(r *plugin.Registry) engine.Engine {
@@ -52,13 +52,13 @@ func (m *Mem) emit(val interface{}) {
 func (m *Mem) Close() {
 }
 
-func (m *Mem) GetLogSeverity() log.Severity {
+func (m *Mem) GetLogSeverity() string {
 	return m.LogSeverity
 }
 
-func (m *Mem) SetLogSeverity(sev log.Severity) {
+func (m *Mem) SetLogSeverity(sev string) error {
 	m.LogSeverity = sev
-	log.SetSeverity(m.LogSeverity)
+	return log.SetSeverity(m.LogSeverity)
 }
 
 func (m *Mem) GetRegistry() *plugin.Registry {

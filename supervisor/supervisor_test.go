@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
 	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/engine/memng"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/plugin/registry"
 	"github.com/FoxComm/vulcand/proxy"
 	"github.com/FoxComm/vulcand/stapler"
@@ -50,7 +50,8 @@ func (s *SupervisorSuite) TearDownTest(c *C) {
 var _ = Suite(&SupervisorSuite{})
 
 func (s *SupervisorSuite) SetUpSuite(c *C) {
-	log.InitWithConfig(log.Config{Name: "console"})
+	err := log.EnsureLoggerExist("console", "error")
+	c.Assert(err, IsNil)
 }
 
 func (s *SupervisorSuite) TestStartStopEmpty(c *C) {

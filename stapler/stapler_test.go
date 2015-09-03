@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/golang.org/x/crypto/ocsp"
 	"github.com/FoxComm/vulcand/engine"
+	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/testutils"
 
 	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
@@ -24,7 +24,8 @@ type StaplerSuite struct {
 }
 
 func (s *StaplerSuite) SetUpSuite(c *C) {
-	log.InitWithConfig(log.Config{Name: "console"})
+	err := log.EnsureLoggerExist("console", "error")
+	c.Assert(err, IsNil)
 	s.re = testutils.OCSPResponse
 }
 
