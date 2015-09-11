@@ -52,6 +52,7 @@ type Service struct {
 	errorC        chan error
 	sigC          chan os.Signal
 	stopC         chan bool
+	started       chan bool
 	supervisor    *supervisor.Supervisor
 	metricsClient metrics.Client
 	apiServer     *manners.GracefulServer
@@ -65,9 +66,14 @@ func NewService(options Options, registry *plugin.Registry) *Service {
 		options:  options,
 		errorC:   make(chan error),
 		// Channel receiving signals has to be non blocking, otherwise the service can miss a signal.
-		sigC:  make(chan os.Signal, 1024),
-		stopC: make(chan bool, 1),
+		sigC:    make(chan os.Signal, 1024),
+		stopC:   make(chan bool, 1),
+		started: make(chan bool),
 	}
+}
+
+func (s Service) WaitUntilStarted() {
+	<-s.started
 }
 
 func (s *Service) Start() error {
@@ -119,6 +125,7 @@ func (s *Service) Start() error {
 		go s.reportSystemMetrics()
 	}
 	signal.Notify(s.sigC, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGUSR2, syscall.SIGCHLD)
+	close(s.started)
 
 	// Block until a signal is received or we got an error
 	for {
