@@ -35,15 +35,11 @@ func GetGlobalLogger() utils.Logger {
 }
 
 func NewDefaultLogger(name, severity string) (Logger, error) {
-	err := mailgunLog.InitWithConfig(mailgunLog.Config{Name: name})
+	fmt.Printf("sev4: %s\n", severity)
+	err := mailgunLog.InitWithConfig(mailgunLog.Config{Name: name, Severity: severity})
 	if err != nil {
 		return nil, err
 	}
-	lvl, err := mailgunLog.SeverityFromString(severity)
-	if err != nil {
-		return nil, err
-	}
-	mailgunLog.SetSeverity(lvl)
 	return &DefaultLogger{}, nil
 }
 
@@ -85,6 +81,7 @@ func SetSeverity(s string) error {
 }
 
 func EnsureLoggerExist(name, severity string) (err error) {
+	fmt.Printf("sev3: %s\n", severity)
 	if currentLogger == nil {
 		currentLogger, err = NewDefaultLogger(name, severity)
 	}
