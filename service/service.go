@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/coreos/go-etcd/etcd"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/manners"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/metrics"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
@@ -52,6 +52,7 @@ type Service struct {
 	errorC        chan error
 	sigC          chan os.Signal
 	stopC         chan bool
+	started       chan bool
 	supervisor    *supervisor.Supervisor
 	metricsClient metrics.Client
 	apiServer     *manners.GracefulServer
@@ -65,13 +66,18 @@ func NewService(options Options, registry *plugin.Registry) *Service {
 		options:  options,
 		errorC:   make(chan error),
 		// Channel receiving signals has to be non blocking, otherwise the service can miss a signal.
-		sigC:  make(chan os.Signal, 1024),
-		stopC: make(chan bool, 1),
+		sigC:    make(chan os.Signal, 1024),
+		stopC:   make(chan bool, 1),
+		started: make(chan bool),
 	}
 }
 
+func (s Service) WaitUntilStarted() {
+	<-s.started
+}
+
 func (s *Service) Start() error {
-	if err := log.EnsureLoggerExist(s.options.Log, s.options.LogSeverity.String()); err != nil {
+	if err := log.EnsureLoggerExist(s.options.Log, s.options.LogSeverity); err != nil {
 		return err
 	}
 
@@ -119,6 +125,7 @@ func (s *Service) Start() error {
 		go s.reportSystemMetrics()
 	}
 	signal.Notify(s.sigC, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGUSR2, syscall.SIGCHLD)
+	close(s.started)
 
 	// Block until a signal is received or we got an error
 	for {

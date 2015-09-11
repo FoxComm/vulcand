@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/coreos/go-etcd/etcd"
+	"github.com/FoxComm/vulcand/log"
 )
 
 type EtcdOptions struct {
@@ -40,7 +40,7 @@ type Options struct {
 	TomlOptions
 
 	Log         string
-	LogSeverity severity
+	LogSeverity string
 
 	ServerReadTimeout    time.Duration
 	ServerWriteTimeout   time.Duration
@@ -53,28 +53,6 @@ type Options struct {
 
 	StatsdAddr   string
 	StatsdPrefix string
-}
-
-type severity struct {
-	s log.Severity
-}
-
-func (s *severity) Get() interface{} {
-	return s.s.Get()
-}
-
-// Set is part of the flag.Value interface.
-func (s *severity) Set(value string) error {
-	out, err := log.SeverityFromString(value)
-	if err != nil {
-		return err
-	}
-	s.s = out
-	return nil
-}
-
-func (s *severity) String() string {
-	return s.s.String()
 }
 
 // Helper to parse options that can occur several times, e.g. cassandra nodes
@@ -134,8 +112,7 @@ func ParseCommandLine() (options Options, err error) {
 	flag.StringVar(&options.CertPath, "certPath", "", "KeyPair to use (enables TLS)")
 	flag.StringVar(&options.Log, "log", "console", "Logging to use (syslog or console)")
 
-	options.LogSeverity.s = log.SeverityWarn
-	flag.Var(&options.LogSeverity, "logSeverity", "logs at or above this level to the logging output")
+	flag.StringVar(&options.LogSeverity, "logSeverity", log.SeverityWarning, "logs at or above this level to the logging output")
 
 	flag.IntVar(&options.ServerMaxHeaderBytes, "serverMaxHeaderBytes", 1<<20, "Maximum size of request headers")
 	flag.DurationVar(&options.ServerReadTimeout, "readTimeout", time.Duration(60)*time.Second, "HTTP server read timeout (deprecated)")
