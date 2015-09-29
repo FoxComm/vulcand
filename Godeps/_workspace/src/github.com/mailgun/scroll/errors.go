@@ -55,18 +55,9 @@ func (e ConflictError) Error() string {
 	return e.Description
 }
 
-type UnsafeFieldError struct {
-	Field       string
-	Description string
-}
-
-func (e UnsafeFieldError) Error() string {
-	return fmt.Sprintf("field %q is unsafe: %v", e.Field, e.Description)
-}
-
 func responseAndStatusFor(err error) (Response, int) {
 	switch err.(type) {
-	case GenericAPIError, MissingFieldError, InvalidFormatError, InvalidParameterError, UnsafeFieldError:
+	case GenericAPIError, MissingFieldError, InvalidFormatError, InvalidParameterError:
 		return Response{"message": err.Error()}, http.StatusBadRequest
 	case NotFoundError:
 		return Response{"message": err.Error()}, http.StatusNotFound

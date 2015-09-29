@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/testutils"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
 	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 	"github.com/FoxComm/vulcand/plugin"
 )

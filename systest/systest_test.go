@@ -15,8 +15,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/coreos/go-etcd/etcd"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/testutils"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/coreos/go-etcd/etcd"
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/secret"

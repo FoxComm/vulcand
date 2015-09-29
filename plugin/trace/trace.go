@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
 	oxytrace "github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/trace"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
 	"github.com/FoxComm/vulcand/plugin"
 )
 

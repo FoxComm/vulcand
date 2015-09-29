@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/coreos/go-etcd/etcd"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
 )
 
 const (

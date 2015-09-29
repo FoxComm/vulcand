@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/utils"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
 )
 
 // Middleware specification, used to construct new middlewares and plug them into CLI API and backends

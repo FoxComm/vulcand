@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/connlimit"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/utils"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
 	"github.com/FoxComm/vulcand/plugin"
 )
 

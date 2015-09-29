@@ -2,11 +2,10 @@ package scroll
 
 import (
 	"net/http"
-	"regexp"
 	"strconv"
 	"time"
 
-	"github.com/FoxComm/vulcand/log"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 )
 
 // Retrieve a POST request field as a string.
@@ -18,22 +17,6 @@ func GetStringField(r *http.Request, fieldName string) (string, error) {
 	return r.FormValue(fieldName), nil
 }
 
-// Retrieves requested field as a string, allowSet provides input sanitization. If an
-// error occurs, returns either a `MissingFieldError` or an `UnsafeFieldError`.
-func GetStringFieldSafe(r *http.Request, fieldName string, allowSet AllowSet) (string, error) {
-	if _, ok := r.Form[fieldName]; !ok {
-		return "", MissingFieldError{fieldName}
-	}
-
-	fieldValue := r.FormValue(fieldName)
-	err := allowSet.IsSafe(fieldValue)
-	if err != nil {
-		return "", UnsafeFieldError{fieldName, err.Error()}
-	}
-
-	return fieldValue, nil
-}
-
 // Retrieve a POST request field as a string.
 // If the requested field is missing, returns provided default value.
 func GetStringFieldWithDefault(r *http.Request, fieldName, defaultValue string) string {
@@ -43,31 +26,13 @@ func GetStringFieldWithDefault(r *http.Request, fieldName, defaultValue string) 
 	return defaultValue
 }
 
-// A multiParamRegex is used to convert Ruby and PHP style array params.
-// PHP uses ["param[0]", "param[1]",..] instead of ["param", "param",..]
-// Ruby uses ["param[]", "param[]",..]
-var multiParamRegex *regexp.Regexp
-
-func init() {
-	multiParamRegex = regexp.MustCompile(`^([a-z:]*)\[\d*\]$`)
-}
-
 // Retrieve fields with the same name as an array of strings.
 func GetMultipleFields(r *http.Request, fieldName string) ([]string, error) {
-	var values = []string{}
-
-	for field, value := range r.Form {
-		// Strip the square brackets.
-		if multiParamRegex.ReplaceAllString(field, "$1") == fieldName {
-			values = append(values, value...)
-		}
-	}
-
-	if len(values) == 0 {
+	value, ok := r.Form[fieldName]
+	if !ok {
 		return []string{}, MissingFieldError{fieldName}
 	}
-
-	return values, nil
+	return value, nil
 }
 
 // Retrieve a POST request field as an integer.
@@ -111,11 +76,4 @@ func GetDurationField(r *http.Request, fieldName string) (time.Duration, error) 
 		return 0, InvalidFormatError{fieldName, s}
 	}
 	return d, nil
-}
-
-func HasField(r *http.Request, fieldName string) bool {
-	if _, ok := r.Form[fieldName]; !ok {
-		return false
-	}
-	return true
 }
