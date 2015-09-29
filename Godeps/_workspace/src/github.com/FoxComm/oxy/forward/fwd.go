@@ -3,6 +3,7 @@
 package forward
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -126,9 +127,8 @@ func (f *Forwarder) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func setTraceHeaders(responseWriter http.ResponseWriter, routerIp, endpointIp string) {
-	responseWriter.Header().Set(router_http.VcapRouterHeader, routerIp)
-	responseWriter.Header().Set(router_http.VcapBackendHeader, addr)
-	responseWriter.Header().Set(router_http.CfRouteEndpointHeader, addr)
+	responseWriter.Header().Set("routerIp", routerIp)
+	responseWriter.Header().Set("backendIp", addr)
 }
 
 func (f *Forwarder) copyRequest(req *http.Request, u *url.URL) *http.Request {
