@@ -12,43 +12,43 @@
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/cbreaker",
-			"Rev": "46e64d0262c785c29b74218024bd1af611a9f23f"
+			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/connlimit",
-			"Rev": "46e64d0262c785c29b74218024bd1af611a9f23f"
+			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/forward",
-			"Rev": "46e64d0262c785c29b74218024bd1af611a9f23f"
+			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/memmetrics",
-			"Rev": "46e64d0262c785c29b74218024bd1af611a9f23f"
+			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/ratelimit",
-			"Rev": "46e64d0262c785c29b74218024bd1af611a9f23f"
+			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/roundrobin",
-			"Rev": "46e64d0262c785c29b74218024bd1af611a9f23f"
+			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/stream",
-			"Rev": "46e64d0262c785c29b74218024bd1af611a9f23f"
+			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/testutils",
-			"Rev": "46e64d0262c785c29b74218024bd1af611a9f23f"
+			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/trace",
-			"Rev": "46e64d0262c785c29b74218024bd1af611a9f23f"
+			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/utils",
-			"Rev": "46e64d0262c785c29b74218024bd1af611a9f23f"
+			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
 		},
 		{
 			"ImportPath": "github.com/buger/goterm",
@@ -65,8 +65,8 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/go-etcd/etcd",
-			"Comment": "v0.4.6",
-			"Rev": "6aa2da5a7a905609c93036b9307185a04a5a84a5"
+			"Comment": "v2.0.0-22-g9847b93",
+			"Rev": "9847b93751a5fbaf227b893d172cee0104ac6427"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",
@@ -75,11 +75,6 @@
 		{
 			"ImportPath": "github.com/gorilla/mux",
 			"Rev": "e444e69cbd2e2e3e0749a2f3c717cec491552bbf"
-		},
-		{
-			"ImportPath": "github.com/mailgun/go-etcd/etcd",
-			"Comment": "v0.2.0-rc1-124-g248e96a",
-			"Rev": "248e96a4ad7adfa23b531eb2d8e80d9050c33d24"
 		},
 		{
 			"ImportPath": "github.com/mailgun/iptools",
@@ -133,6 +128,10 @@
 		{
 			"ImportPath": "github.com/mailgun/ttlmap",
 			"Rev": "51994f8e1aad271eb214e725379dde8bd4c90acf"
+		},
+		{
+			"ImportPath": "github.com/ugorji/go/codec",
+			"Rev": "03e33114d4d60a1f37150325e15f51b0fa6fc4f6"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/nacl/secretbox",

@@ -128,7 +128,7 @@ func (f *Forwarder) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 func setTraceHeaders(responseWriter http.ResponseWriter, routerIp, endpointIp string) {
 	responseWriter.Header().Set("routerIp", routerIp)
-	responseWriter.Header().Set("backendIp", addr)
+	responseWriter.Header().Set("backendIp", endpointIp)
 }
 
 func (f *Forwarder) copyRequest(req *http.Request, u *url.URL) *http.Request {
