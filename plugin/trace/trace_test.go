@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
-	oxytrace "github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/trace"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/testutils"
+	oxytrace "github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/trace"
 	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 	"github.com/FoxComm/vulcand/plugin"
 )

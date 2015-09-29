@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	oxytest "github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
+	oxytest "github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/testutils"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/scroll"
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/engine/memng"

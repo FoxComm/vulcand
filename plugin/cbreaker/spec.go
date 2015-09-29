@@ -30,7 +30,7 @@ import (
 	"time"
 
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/cbreaker"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/cbreaker"
 	"github.com/FoxComm/vulcand/plugin"
 )
 
