@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/forward"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/utils"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
 )
 
 // Middleware specification, used to construct new middlewares and plug them into CLI API and backends
@@ -79,6 +80,8 @@ type Registry struct {
 	specs     []*MiddlewareSpec
 	notFound  Middleware
 	noServers utils.ErrorHandler
+
+	ReqVisitor forward.ReqVisitor
 }
 
 func NewRegistry() *Registry {

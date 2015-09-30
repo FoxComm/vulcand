@@ -11,9 +11,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/forward"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
+	"github.com/mailgun/oxy/forward"
+	"github.com/mailgun/oxy/testutils"
 
 	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 )

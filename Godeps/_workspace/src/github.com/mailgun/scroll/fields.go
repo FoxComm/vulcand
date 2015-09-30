@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/FoxComm/vulcand/log"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/log"
 )
 
 // Retrieve a POST request field as a string.

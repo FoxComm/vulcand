@@ -6,8 +6,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/forward"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/utils"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/metrics"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/plugin"
@@ -58,6 +59,8 @@ type Options struct {
 	TimeProvider          timetools.TimeProvider
 	NotFoundMiddleware    plugin.Middleware
 	NoServersErrorHandler utils.ErrorHandler
+
+	ReqVisitor forward.ReqVisitor
 }
 
 type NewProxyFn func(id int) (Proxy, error)

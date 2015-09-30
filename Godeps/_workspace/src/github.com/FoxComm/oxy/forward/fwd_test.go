@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
+	"github.com/mailgun/oxy/testutils"
 
 	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 )

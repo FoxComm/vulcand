@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/memmetrics"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/testutils"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/timetools"
+	"github.com/mailgun/oxy/testutils"
 
 	. "github.com/FoxComm/vulcand/Godeps/_workspace/src/gopkg.in/check.v1"
 )

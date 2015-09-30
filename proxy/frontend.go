@@ -6,10 +6,10 @@ import (
 	"net/url"
 	"sort"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/forward"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/roundrobin"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/stream"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/utils"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/forward"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/roundrobin"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/stream"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/utils"
 	"github.com/FoxComm/vulcand/engine"
 	"github.com/FoxComm/vulcand/log"
 )
@@ -116,6 +116,7 @@ func (f *frontend) rebuild() error {
 				Hostname:           settings.Hostname,
 				TrustForwardHeader: settings.TrustForwardHeader,
 			}),
+		forward.Visitor(f.mux.options.ReqVisitor),
 		forward.PassHostHeader(settings.PassHostHeader))
 
 	// rtwatcher will be observing and aggregating metrics

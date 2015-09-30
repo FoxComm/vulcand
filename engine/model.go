@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/memmetrics"
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/oxy/stream"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/memmetrics"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/FoxComm/oxy/stream"
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/route"
 	"github.com/FoxComm/vulcand/plugin"
 )

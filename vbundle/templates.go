@@ -54,7 +54,7 @@ func GetRegistry() (*plugin.Registry, error) {
 const vulcanctlTemplate = `package main
 
 import (
-    "github.com/FoxComm/log"
+    "github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/vctl/command"
 	"{{.PackagePath}}/registry"
 	"os"

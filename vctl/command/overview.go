@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/buger/goterm"
-	"github.com/FoxComm/vulcand/log"
 	"github.com/FoxComm/vulcand/engine"
+	"github.com/FoxComm/vulcand/log"
 )
 
 func frontendsOverview(frontends []engine.Frontend) string {

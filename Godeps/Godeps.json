@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/FoxComm/vulcand",
-	"GoVersion": "go1.5",
+	"GoVersion": "go1.4.2",
 	"Packages": [
 		"./..."
 	],
@@ -9,6 +9,46 @@
 			"ImportPath": "github.com/BurntSushi/toml",
 			"Comment": "v0.1.0-21-g056c9bc",
 			"Rev": "056c9bc7be7190eaa7715723883caffa5f8fa3e4"
+		},
+		{
+			"ImportPath": "github.com/FoxComm/oxy/cbreaker",
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
+		},
+		{
+			"ImportPath": "github.com/FoxComm/oxy/connlimit",
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
+		},
+		{
+			"ImportPath": "github.com/FoxComm/oxy/forward",
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
+		},
+		{
+			"ImportPath": "github.com/FoxComm/oxy/memmetrics",
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
+		},
+		{
+			"ImportPath": "github.com/FoxComm/oxy/ratelimit",
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
+		},
+		{
+			"ImportPath": "github.com/FoxComm/oxy/roundrobin",
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
+		},
+		{
+			"ImportPath": "github.com/FoxComm/oxy/stream",
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
+		},
+		{
+			"ImportPath": "github.com/FoxComm/oxy/testutils",
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
+		},
+		{
+			"ImportPath": "github.com/FoxComm/oxy/trace",
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
+		},
+		{
+			"ImportPath": "github.com/FoxComm/oxy/utils",
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/buger/goterm",
@@ -20,7 +60,7 @@
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
-			"Comment": "1.2.0-62-gbf4a526",
+			"Comment": "1.2.0-135-gf998261",
 			"Rev": "f9982619ccace7df963bb7f6d1de3a6f014ff709"
 		},
 		{
@@ -42,7 +82,7 @@
 		},
 		{
 			"ImportPath": "github.com/mailgun/log",
-			"Rev": "44874009257d4d47ba9806f1b7f72a32a015e4d8"
+			"Rev": "2f35a4607f1abf71f97f77f99b0de8493ef6f4ef"
 		},
 		{
 			"ImportPath": "github.com/mailgun/manners",
@@ -62,39 +102,7 @@
 			"Rev": "22cedde644395b0b798017493b9b950485619b87"
 		},
 		{
-			"ImportPath": "github.com/mailgun/oxy/cbreaker",
-			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
-		},
-		{
-			"ImportPath": "github.com/mailgun/oxy/connlimit",
-			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
-		},
-		{
-			"ImportPath": "github.com/mailgun/oxy/forward",
-			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
-		},
-		{
 			"ImportPath": "github.com/mailgun/oxy/memmetrics",
-			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
-		},
-		{
-			"ImportPath": "github.com/mailgun/oxy/ratelimit",
-			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
-		},
-		{
-			"ImportPath": "github.com/mailgun/oxy/roundrobin",
-			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
-		},
-		{
-			"ImportPath": "github.com/mailgun/oxy/stream",
-			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
-		},
-		{
-			"ImportPath": "github.com/mailgun/oxy/testutils",
-			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
-		},
-		{
-			"ImportPath": "github.com/mailgun/oxy/trace",
 			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
@@ -111,7 +119,7 @@
 		},
 		{
 			"ImportPath": "github.com/mailgun/scroll",
-			"Rev": "77b0214e471c031b73fac913b7dda81b21ed4bd3"
+			"Rev": "8695a1f5d7dcda3d14be219382d88e64a83ac0ce"
 		},
 		{
 			"ImportPath": "github.com/mailgun/timetools",
@@ -143,7 +151,7 @@
 		},
 		{
 			"ImportPath": "gopkg.in/check.v1",
-			"Rev": "64131543e7896d5bcc6bd5a76287eb75ea96c673"
+			"Rev": "11d3bc7aa68e238947792f30573146a3231fc0f1"
 		},
 		{
 			"ImportPath": "gopkg.in/fsnotify.v1",
