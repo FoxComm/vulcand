@@ -12,43 +12,43 @@
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/cbreaker",
-			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
+			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/connlimit",
-			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
+			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/forward",
-			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
+			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/memmetrics",
-			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
+			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/ratelimit",
-			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
+			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/roundrobin",
-			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
+			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/stream",
-			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
+			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/testutils",
-			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
+			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/trace",
-			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
+			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/utils",
-			"Rev": "123f13d9f7290acabe11781be3ddf5fd5a916e11"
+			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
 		},
 		{
 			"ImportPath": "github.com/buger/goterm",
@@ -103,11 +103,11 @@
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/memmetrics",
-			"Rev": "988bfa0d106d2d52ffeb12a0396238e50a7fff41"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/oxy/utils",
-			"Rev": "988bfa0d106d2d52ffeb12a0396238e50a7fff41"
+			"Rev": "7d13b3eab8e6392740c375f298557d1a01014aa4"
 		},
 		{
 			"ImportPath": "github.com/mailgun/predicate",
@@ -119,7 +119,7 @@
 		},
 		{
 			"ImportPath": "github.com/mailgun/scroll",
-			"Rev": "c33949cbf905969d74b2fbb22a1490319cea2d14"
+			"Rev": "8695a1f5d7dcda3d14be219382d88e64a83ac0ce"
 		},
 		{
 			"ImportPath": "github.com/mailgun/timetools",
@@ -131,7 +131,7 @@
 		},
 		{
 			"ImportPath": "github.com/ugorji/go/codec",
-			"Rev": "03e33114d4d60a1f37150325e15f51b0fa6fc4f6"
+			"Rev": "5abd4e96a45c386928ed2ca2a7ef63e2533e18ec"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/nacl/secretbox",
@@ -151,7 +151,7 @@
 		},
 		{
 			"ImportPath": "gopkg.in/check.v1",
-			"Rev": "b3d3430320d4260e5fea99841af984b3badcea63"
+			"Rev": "11d3bc7aa68e238947792f30573146a3231fc0f1"
 		},
 		{
 			"ImportPath": "gopkg.in/fsnotify.v1",

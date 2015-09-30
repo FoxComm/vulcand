@@ -3,7 +3,6 @@
 package forward
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -17,6 +16,11 @@ import (
 // ReqRewriter can alter request headers and body
 type ReqRewriter interface {
 	Rewrite(r *http.Request)
+}
+
+// ReqVisitor accept non-pointer request
+type ReqVisitor interface {
+	Visit(r http.Request)
 }
 
 type optSetter func(f *Forwarder) error
@@ -42,6 +46,13 @@ func Rewriter(r ReqRewriter) optSetter {
 	}
 }
 
+func Visitor(r ReqVisitor) optSetter {
+	return func(f *Forwarder) error {
+		f.reqVisitor = r
+		return nil
+	}
+}
+
 // ErrorHandler is a functional argument that sets error handler of the server
 func ErrorHandler(h utils.ErrorHandler) optSetter {
 	return func(f *Forwarder) error {
@@ -61,6 +72,7 @@ type Forwarder struct {
 	errHandler   utils.ErrorHandler
 	roundTripper http.RoundTripper
 	rewriter     ReqRewriter
+	reqVisitor   ReqVisitor
 	log          utils.Logger
 	passHost     bool
 }
@@ -93,6 +105,11 @@ func New(setters ...optSetter) (*Forwarder, error) {
 
 func (f *Forwarder) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	start := time.Now().UTC()
+
+	if f.reqVisitor != nil {
+		f.reqVisitor.Visit(*req)
+	}
+
 	response, err := f.roundTripper.RoundTrip(f.copyRequest(req, req.URL))
 	if err != nil {
 		f.log.Errorf("Error forwarding to %v, err: %v", req.URL, err)
@@ -103,7 +120,7 @@ func (f *Forwarder) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// if p.traceKey != "" && request.Header.Get(router_http.VcapTraceHeader) == p.traceKey {
 	//     setTraceHeaders(responseWriter, p.ip, endpoint.CanonicalAddr())
 	// }
-	fmt.Printf("URL: %s\n", req.URL)
+	// setTraceHeaders(w, routerIp, req.URL.String())
 
 	if req.TLS != nil {
 		f.log.Infof("Round trip: %v, code: %v, duration: %v tls:version: %x, tls:resume:%t, tls:csuite:%x, tls:server:%v",
@@ -124,11 +141,6 @@ func (f *Forwarder) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set(ContentLength, strconv.FormatInt(written, 10))
 	}
 	response.Body.Close()
-}
-
-func setTraceHeaders(responseWriter http.ResponseWriter, routerIp, endpointIp string) {
-	responseWriter.Header().Set("routerIp", routerIp)
-	responseWriter.Header().Set("backendIp", endpointIp)
 }
 
 func (f *Forwarder) copyRequest(req *http.Request, u *url.URL) *http.Request {
@@ -169,3 +181,8 @@ func mergeStartingSlashes(uri string) string {
 	}
 	return uri
 }
+
+// func setTraceHeaders(responseWriter http.ResponseWriter, routerIp, endpointUrl string) {
+// 	responseWriter.Header().Set("routerIp", routerIp)
+// 	responseWriter.Header().Set("backendIp", endpointUrl)
+// }

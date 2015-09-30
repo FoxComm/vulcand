@@ -142,8 +142,6 @@ func (app *App) IsPublicRequest(request *http.Request) bool {
 //
 // Supports graceful shutdown on 'kill' and 'int' signals.
 func (app *App) Run() error {
-	http.Handle("/", app.router)
-
 	// toggle heartbeat on SIGUSR1
 	go func() {
 		app.heartbeater.Start()
@@ -159,14 +157,14 @@ func (app *App) Run() error {
 	// listen for a shutdown signal
 	go func() {
 		exitChan := make(chan os.Signal, 1)
-		signal.Notify(exitChan, os.Interrupt, os.Kill)
+		signal.Notify(exitChan, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
 		s := <-exitChan
 		log.Infof("Got shutdown signal: %v", s)
 		manners.Close()
 	}()
 
 	addr := fmt.Sprintf("%v:%v", app.Config.ListenIP, app.Config.ListenPort)
-	return manners.ListenAndServe(addr, nil)
+	return manners.ListenAndServe(addr, app.router)
 }
 
 // registerLocation is a helper for registering handlers in vulcan.

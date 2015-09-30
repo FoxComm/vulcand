@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/mailgun/go-etcd/etcd"
+	"github.com/FoxComm/vulcand/Godeps/_workspace/src/github.com/coreos/go-etcd/etcd"
 )
 
 const (
@@ -22,6 +22,8 @@ type Client struct {
 
 func NewClient(key string) *Client {
 	etcd := etcd.NewClient([]string{etcdMachine})
+
+	etcd.SyncCluster()
 
 	return &Client{Key: key, etcd: etcd}
 }
