@@ -12,43 +12,43 @@
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/cbreaker",
-			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/connlimit",
-			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/forward",
-			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/memmetrics",
-			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/ratelimit",
-			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/roundrobin",
-			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/stream",
-			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/testutils",
-			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/trace",
-			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/FoxComm/oxy/utils",
-			"Rev": "0bd2121c56d354c9505139ca82bcb30d11e342bd"
+			"Rev": "440f68383ed686c0bd60156ac5bde5c6eb92029e"
 		},
 		{
 			"ImportPath": "github.com/buger/goterm",

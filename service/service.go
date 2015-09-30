@@ -352,6 +352,7 @@ func (s *Service) newProxy(id int) (proxy.Proxy, error) {
 		},
 		NotFoundMiddleware:    s.registry.GetNotFoundMiddleware(),
 		NoServersErrorHandler: s.registry.GetNoServersErrorHandler(),
+		ReqVisitor:            s.registry.ReqVisitor,
 	})
 }
 

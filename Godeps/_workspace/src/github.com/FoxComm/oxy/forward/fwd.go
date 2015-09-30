@@ -20,7 +20,7 @@ type ReqRewriter interface {
 
 // ReqVisitor accept non-pointer request
 type ReqVisitor interface {
-	Visit(r http.Request)
+	Visit(rw http.ResponseWriter, r http.Request)
 }
 
 type optSetter func(f *Forwarder) error
@@ -107,7 +107,7 @@ func (f *Forwarder) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	start := time.Now().UTC()
 
 	if f.reqVisitor != nil {
-		f.reqVisitor.Visit(*req)
+		f.reqVisitor.Visit(w, *req)
 	}
 
 	response, err := f.roundTripper.RoundTrip(f.copyRequest(req, req.URL))

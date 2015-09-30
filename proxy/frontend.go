@@ -116,6 +116,7 @@ func (f *frontend) rebuild() error {
 				Hostname:           settings.Hostname,
 				TrustForwardHeader: settings.TrustForwardHeader,
 			}),
+		forward.Visitor(f.mux.options.ReqVisitor),
 		forward.PassHostHeader(settings.PassHostHeader))
 
 	// rtwatcher will be observing and aggregating metrics
